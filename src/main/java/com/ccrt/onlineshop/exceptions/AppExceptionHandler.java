@@ -25,6 +25,13 @@ public class AppExceptionHandler {
     return new ResponseEntity<ResponseMessage>(errorMessage, new HttpHeaders(), exception.getHttpStatus());
   }
 
+  @ExceptionHandler(value = { CategoryServiceException.class })
+  public ResponseEntity<ResponseMessage> handleCategoryServiceException(CategoryServiceException exception) {
+    ResponseMessage errorMessage = new ResponseMessage("CATEGORY_SERVICE: " + exception.getCode(),
+        exception.getMessage());
+    return new ResponseEntity<ResponseMessage>(errorMessage, new HttpHeaders(), exception.getHttpStatus());
+  }
+
   @ExceptionHandler(value = { HttpMessageNotReadableException.class })
   public ResponseEntity<ResponseMessage> handleConstraintViolationException(HttpMessageNotReadableException exception) {
     ResponseMessage errorMessage = new ResponseMessage("BAD_REQUEST", "You must provide valid request body.");

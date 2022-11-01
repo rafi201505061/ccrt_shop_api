@@ -37,6 +37,10 @@ public class Utils {
     return generateRandomString(length, ALPHABET);
   }
 
+  public String generateCategoryId() {
+    return generateRandomString(11, ALPHABET);
+  }
+
   public String generateUserId() {
     return generateRandomString(20, ALPHABET);
   }

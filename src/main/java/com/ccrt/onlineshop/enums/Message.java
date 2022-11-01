@@ -13,6 +13,7 @@ public enum Message {
   PASSWORD_RESET_CODE_MISMATCH("Pass reset code didn't match."),
   OTP_CODE_EXPIRED("Otp code has expired."),
   OTP_CODE_MISMATCH("Otp code didn't match."),
+  FILE_CREATION_ERROR("Image couldn't be uploaded."),
   USER_OTP_SERVICE_BLOCKED(
       "Too many requests within a short amount of time. User is blocked temporarily. Please try again later."),
   USER_NOT_FOUND("USER_NOT_FOUND");
