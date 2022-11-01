@@ -14,6 +14,8 @@ public enum Message {
   OTP_CODE_EXPIRED("Otp code has expired."),
   OTP_CODE_MISMATCH("Otp code didn't match."),
   FILE_CREATION_ERROR("Image couldn't be uploaded."),
+  TITLE_NOT_VALID("You must provide a valid title."),
+  CATEGORY_NOT_FOUND("Category couldn't be found."),
   USER_OTP_SERVICE_BLOCKED(
       "Too many requests within a short amount of time. User is blocked temporarily. Please try again later."),
   USER_NOT_FOUND("USER_NOT_FOUND");

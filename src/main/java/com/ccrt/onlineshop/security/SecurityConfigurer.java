@@ -32,6 +32,8 @@ public class SecurityConfigurer {
         .getSharedObject(AuthenticationConfiguration.class);
     httpSecurity.cors().and().csrf().disable().authorizeRequests()
         .antMatchers(HttpMethod.POST, "/users/admin").hasAnyAuthority(Role.ADMIN.name())
+        .antMatchers(HttpMethod.POST, "/categories").hasAnyAuthority(Role.ADMIN.name())
+        .antMatchers(HttpMethod.POST, "/categories/{categoryId}/sub-categories").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, SecurityConstants.LOG_IN_URL).permitAll()
         .antMatchers(HttpMethod.POST, "/users").permitAll()
         .antMatchers(HttpMethod.GET, "/users").permitAll()
@@ -39,6 +41,9 @@ public class SecurityConfigurer {
         .antMatchers(HttpMethod.PUT, "/users/{userId}/password-reset").permitAll()
         .antMatchers(HttpMethod.POST, "/otp").permitAll()
         .antMatchers(HttpMethod.POST, "/otp/validation").permitAll()
+        .antMatchers(HttpMethod.GET, "/categories").permitAll()
+        .antMatchers(HttpMethod.GET, "/categories/{categoryId}/sub-categories").permitAll()
+
         .anyRequest()
         .authenticated().and()
         .addFilter(new AuthenticationFilter(authenticationManager(authenticationConfiguration)))

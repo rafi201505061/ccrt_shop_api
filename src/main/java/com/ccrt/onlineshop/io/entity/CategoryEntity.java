@@ -1,10 +1,14 @@
 package com.ccrt.onlineshop.io.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -22,6 +26,9 @@ public class CategoryEntity {
 
   @Column(nullable = false, length = 250)
   private String imageUrl;
+
+  @OneToMany(mappedBy = "category")
+  Set<SubCategoryEntity> subCategories = new HashSet<>();
 
   public long getId() {
     return id;
@@ -53,5 +60,13 @@ public class CategoryEntity {
 
   public void setImageUrl(String imageUrl) {
     this.imageUrl = imageUrl;
+  }
+
+  public Set<SubCategoryEntity> getSubCategories() {
+    return subCategories;
+  }
+
+  public void setSubCategories(Set<SubCategoryEntity> subCategories) {
+    this.subCategories = subCategories;
   }
 }

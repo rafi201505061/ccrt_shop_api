@@ -8,4 +8,6 @@ import com.ccrt.onlineshop.io.entity.CategoryEntity;
 
 public interface CategoryRepository extends PagingAndSortingRepository<CategoryEntity, Long> {
   List<CategoryEntity> findAllByOrderByTitleDesc();
+
+  CategoryEntity findByCategoryId(String categoryId);
 }
