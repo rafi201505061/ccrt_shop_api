@@ -15,13 +15,16 @@ import com.ccrt.onlineshop.enums.Message;
 import com.ccrt.onlineshop.enums.MessageCode;
 import com.ccrt.onlineshop.exceptions.CategoryServiceException;
 import com.ccrt.onlineshop.io.entity.CategoryEntity;
+import com.ccrt.onlineshop.io.entity.PromotedCategoryEntity;
 import com.ccrt.onlineshop.io.entity.SubCategoryEntity;
 import com.ccrt.onlineshop.io.repository.CategoryRepository;
+import com.ccrt.onlineshop.io.repository.PromotedCategoryRepository;
 import com.ccrt.onlineshop.io.repository.SubCategoryRepository;
 import com.ccrt.onlineshop.service.CategoryService;
 import com.ccrt.onlineshop.shared.FileUploadUtil;
 import com.ccrt.onlineshop.shared.Utils;
 import com.ccrt.onlineshop.shared.dto.CategoryDto;
+import com.ccrt.onlineshop.shared.dto.PromotedCategoryDto;
 import com.ccrt.onlineshop.shared.dto.SubCategoryDto;
 
 @Service
@@ -35,6 +38,9 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Autowired
   private SubCategoryRepository subCategoryRepository;
+
+  @Autowired
+  private PromotedCategoryRepository promotedCategoryRepository;
 
   @Autowired
   private Utils utils;
@@ -162,6 +168,37 @@ public class CategoryServiceImpl implements CategoryService {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public PromotedCategoryDto changePromotedCategory(PromotedCategoryDto promotedCategoryDto) {
+    SubCategoryEntity subCategoryEntity = subCategoryRepository
+        .findBySubCategoryId(promotedCategoryDto.getSubCategoryId());
+    if (subCategoryEntity == null) {
+      throw new CategoryServiceException(MessageCode.SUB_CATEGORY_NOT_FOUND.name(),
+          Message.SUB_CATEGORY_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+    }
+    PromotedCategoryEntity promotedCategoryEntity = promotedCategoryRepository
+        .findBySlotNo(promotedCategoryDto.getSlotNo());
+    if (promotedCategoryEntity == null) {
+      promotedCategoryEntity = modelMapper.map(promotedCategoryDto,
+          PromotedCategoryEntity.class);
+      promotedCategoryEntity.setSubCategory(subCategoryEntity);
+    } else {
+      promotedCategoryEntity.setSubCategory(subCategoryEntity);
+    }
+    PromotedCategoryEntity updatedPromotedCategory = promotedCategoryRepository.save(promotedCategoryEntity);
+    return modelMapper.map(updatedPromotedCategory, PromotedCategoryDto.class);
+  }
+
+  @Override
+  public List<PromotedCategoryDto> retrievePromotedCategories() {
+    List<PromotedCategoryEntity> promotedCategoryEntities = promotedCategoryRepository.findAll();
+    List<PromotedCategoryDto> promotedCategoryDtos = new ArrayList<>();
+    for (PromotedCategoryEntity promotedCategoryEntity : promotedCategoryEntities) {
+      promotedCategoryDtos.add(modelMapper.map(promotedCategoryEntity, PromotedCategoryDto.class));
+    }
+    return promotedCategoryDtos;
   }
 
 }

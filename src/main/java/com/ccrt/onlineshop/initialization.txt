@@ -1,0 +1,1 @@
+1.insert 6 rows for 6 promoted categories in promotedCategories table

@@ -4,6 +4,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -30,6 +31,14 @@ public class AppExceptionHandler {
     ResponseMessage errorMessage = new ResponseMessage("CATEGORY_SERVICE: " + exception.getCode(),
         exception.getMessage());
     return new ResponseEntity<ResponseMessage>(errorMessage, new HttpHeaders(), exception.getHttpStatus());
+  }
+
+  @ExceptionHandler(value = { HttpMediaTypeNotSupportedException.class })
+  public ResponseEntity<ResponseMessage> handleHttpMediaTypeNotSupportedException(
+      HttpMediaTypeNotSupportedException exception) {
+    ResponseMessage errorMessage = new ResponseMessage("BAD_REQUEST", exception.getMessage());
+    return new ResponseEntity<ResponseMessage>(errorMessage, new HttpHeaders(),
+        HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(value = { HttpMessageNotReadableException.class })

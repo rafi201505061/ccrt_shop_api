@@ -34,6 +34,11 @@ public class SecurityConfigurer {
         .antMatchers(HttpMethod.POST, "/users/admin").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, "/categories").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, "/categories/{categoryId}/sub-categories").hasAnyAuthority(Role.ADMIN.name())
+        .antMatchers(HttpMethod.PUT, "/categories/{categoryId}").hasAnyAuthority(Role.ADMIN.name())
+        .antMatchers(HttpMethod.PUT, "/categories/{categoryId}/sub-categories/{subCategoryId}")
+        .hasAnyAuthority(Role.ADMIN.name())
+        .antMatchers(HttpMethod.POST, "/promoted-categories").hasAnyAuthority(Role.ADMIN.name())
+
         .antMatchers(HttpMethod.POST, SecurityConstants.LOG_IN_URL).permitAll()
         .antMatchers(HttpMethod.POST, "/users").permitAll()
         .antMatchers(HttpMethod.GET, "/users").permitAll()
@@ -43,6 +48,7 @@ public class SecurityConfigurer {
         .antMatchers(HttpMethod.POST, "/otp/validation").permitAll()
         .antMatchers(HttpMethod.GET, "/categories").permitAll()
         .antMatchers(HttpMethod.GET, "/categories/{categoryId}/sub-categories").permitAll()
+        .antMatchers(HttpMethod.GET, "/promoted-categories").permitAll()
 
         .anyRequest()
         .authenticated().and()
