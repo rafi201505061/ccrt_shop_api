@@ -16,6 +16,8 @@ public enum Message {
   FILE_CREATION_ERROR("Image couldn't be uploaded."),
   TITLE_NOT_VALID("You must provide a valid title."),
   CATEGORY_NOT_FOUND("Category couldn't be found."),
+  IMAGE_NOT_VALID("You must provide a valid image."),
+  SUB_CATEGORY_NOT_FOUND("Sub category couldn't be found."),
   USER_OTP_SERVICE_BLOCKED(
       "Too many requests within a short amount of time. User is blocked temporarily. Please try again later."),
   USER_NOT_FOUND("USER_NOT_FOUND");

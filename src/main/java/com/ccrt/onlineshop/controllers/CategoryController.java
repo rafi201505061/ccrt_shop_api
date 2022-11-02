@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,7 +41,7 @@ public class CategoryController {
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public CategoryRest addCategory(@RequestPart(name = "image", required = false) MultipartFile image,
       @ModelAttribute CategoryCreationRequestModel categoryCreationRequestModel) {
-    checkCategoryCreationRequestModel(categoryCreationRequestModel);
+    checkCategoryCreationRequestModel(categoryCreationRequestModel, image);
     CategoryDto categoryDto = modelMapper.map(categoryCreationRequestModel, CategoryDto.class);
     categoryDto.setImage(image);
     CategoryDto createdCategoryDto = categoryService.createCategory(categoryDto);
@@ -57,11 +58,22 @@ public class CategoryController {
     return categoryRests;
   }
 
+  @PutMapping(value = "/{categoryId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public CategoryRest updateCategory(@RequestPart(name = "image", required = false) MultipartFile image,
+      @ModelAttribute CategoryCreationRequestModel categoryCreationRequestModel,
+      @PathVariable String categoryId) {
+    checkCategoryUpdateRequestModel(categoryCreationRequestModel, image);
+    CategoryDto categoryDto = modelMapper.map(categoryCreationRequestModel, CategoryDto.class);
+    categoryDto.setImage(image);
+    CategoryDto createdCategoryDto = categoryService.updateCategory(categoryId, categoryDto);
+    return modelMapper.map(createdCategoryDto, CategoryRest.class);
+  }
+
   @PostMapping(value = "/{categoryId}/sub-categories", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public SubCategoryRest addSubCategory(@RequestPart(name = "image", required = false) MultipartFile image,
       @ModelAttribute SubCategoryCreationRequestModel subCategoryCreationRequestModel,
       @PathVariable String categoryId) {
-    checkSubCategoryCreationRequestModel(subCategoryCreationRequestModel);
+    checkSubCategoryCreationRequestModel(subCategoryCreationRequestModel, image);
     SubCategoryDto subCategoryDto = modelMapper.map(subCategoryCreationRequestModel, SubCategoryDto.class);
     subCategoryDto.setImage(image);
     SubCategoryDto createdSubCategoryDto = categoryService.addSubCategory(categoryId, subCategoryDto);
@@ -78,18 +90,62 @@ public class CategoryController {
     return subCategoryRests;
   }
 
-  private void checkCategoryCreationRequestModel(CategoryCreationRequestModel categoryCreationRequestModel) {
+  @PutMapping(value = "/{categoryId}/sub-categories/{subCategoryId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public SubCategoryRest updateSubCategory(@RequestPart(name = "image", required = false) MultipartFile image,
+      @ModelAttribute SubCategoryCreationRequestModel subCategoryCreationRequestModel,
+      @PathVariable String categoryId, @PathVariable String subCategoryId) {
+    checkSubCategoryUpdateRequestModel(subCategoryCreationRequestModel, image);
+    SubCategoryDto subCategoryDto = modelMapper.map(subCategoryCreationRequestModel, SubCategoryDto.class);
+    subCategoryDto.setImage(image);
+    SubCategoryDto createdSubCategoryDto = categoryService.updateSubCategory(categoryId, subCategoryId, subCategoryDto);
+    return modelMapper.map(createdSubCategoryDto, SubCategoryRest.class);
+  }
+
+  private void checkCategoryCreationRequestModel(CategoryCreationRequestModel categoryCreationRequestModel,
+      MultipartFile image) {
     String title = categoryCreationRequestModel.getTitle();
     if (title == null) {
       throw new CategoryServiceException(MessageCode.TITLE_NOT_VALID.name(), Message.TITLE_NOT_VALID.getMessage(),
           HttpStatus.BAD_REQUEST);
     }
+
+    if (image == null) {
+      throw new CategoryServiceException(MessageCode.IMAGE_NOT_VALID.name(), Message.IMAGE_NOT_VALID.getMessage(),
+          HttpStatus.BAD_REQUEST);
+    }
   }
 
-  private void checkSubCategoryCreationRequestModel(SubCategoryCreationRequestModel subCategoryCreationRequestModel) {
+  private void checkCategoryUpdateRequestModel(CategoryCreationRequestModel categoryCreationRequestModel,
+      MultipartFile image) {
+    String title = categoryCreationRequestModel.getTitle();
+    if (image == null && title == null) {
+      throw new CategoryServiceException("BAD_REQUEST",
+          "You must provide either title or image or both to update title or image or both.",
+          HttpStatus.BAD_REQUEST);
+    }
+
+  }
+
+  private void checkSubCategoryUpdateRequestModel(SubCategoryCreationRequestModel subCategoryCreationRequestModel,
+      MultipartFile image) {
+    String title = subCategoryCreationRequestModel.getTitle();
+    if (image == null && title == null) {
+      throw new CategoryServiceException("BAD_REQUEST",
+          "You must provide either title or image or both to update title or image or both.",
+          HttpStatus.BAD_REQUEST);
+    }
+
+  }
+
+  private void checkSubCategoryCreationRequestModel(SubCategoryCreationRequestModel subCategoryCreationRequestModel,
+      MultipartFile image) {
     String title = subCategoryCreationRequestModel.getTitle();
     if (title == null) {
       throw new CategoryServiceException(MessageCode.TITLE_NOT_VALID.name(), Message.TITLE_NOT_VALID.getMessage(),
+          HttpStatus.BAD_REQUEST);
+    }
+    if (image == null) {
+      throw new CategoryServiceException(MessageCode.IMAGE_NOT_VALID.name(), Message.IMAGE_NOT_VALID.getMessage(),
           HttpStatus.BAD_REQUEST);
     }
   }

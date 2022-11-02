@@ -110,4 +110,58 @@ public class CategoryServiceImpl implements CategoryService {
     return subCategoryDtos;
   }
 
+  @Transactional
+  @Override
+  public CategoryDto updateCategory(String categoryId, CategoryDto categoryDto) {
+    try {
+      CategoryEntity categoryEntity = categoryRepository.findByCategoryId(categoryId);
+      if (categoryEntity == null) {
+        throw new CategoryServiceException(MessageCode.CATEGORY_NOT_FOUND.name(),
+            Message.CATEGORY_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+      }
+      if (categoryDto.getImage() != null) {
+        String fileName = categoryId + "." + utils.getFileExtension(categoryDto.getImage().getOriginalFilename());
+        fileUploadUtil.saveFile(FileUploadUtil.CATEGORY_UPLOAD_DIR, fileName, categoryDto.getImage());
+        categoryEntity.setImageUrl(FileUploadUtil.CATEGORY_UPLOAD_DIR + "\\" + fileName);
+      }
+      if (categoryDto.getTitle() != null) {
+        categoryEntity.setTitle(categoryDto.getTitle());
+      }
+      CategoryEntity updatedCategoryEntity = categoryRepository.save(categoryEntity);
+      return modelMapper.map(updatedCategoryEntity, CategoryDto.class);
+    } catch (IOException e) {
+      throw new CategoryServiceException(MessageCode.FILE_CREATION_ERROR.name(),
+          Message.FILE_CREATION_ERROR.getMessage());
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Transactional
+  @Override
+  public SubCategoryDto updateSubCategory(String categoryId, String subCategoryId, SubCategoryDto subCategoryDto) {
+    try {
+      SubCategoryEntity subCategoryEntity = subCategoryRepository.findBySubCategoryId(subCategoryId);
+      if (subCategoryEntity == null) {
+        throw new CategoryServiceException(MessageCode.SUB_CATEGORY_NOT_FOUND.name(),
+            Message.SUB_CATEGORY_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+      }
+      if (subCategoryDto.getImage() != null) {
+        String fileName = categoryId + "." + utils.getFileExtension(subCategoryDto.getImage().getOriginalFilename());
+        fileUploadUtil.saveFile(FileUploadUtil.CATEGORY_UPLOAD_DIR, fileName, subCategoryDto.getImage());
+        subCategoryEntity.setImageUrl(FileUploadUtil.CATEGORY_UPLOAD_DIR + "\\" + fileName);
+      }
+      if (subCategoryDto.getTitle() != null) {
+        subCategoryEntity.setTitle(subCategoryDto.getTitle());
+      }
+      SubCategoryEntity updatedSubCategoryEntity = subCategoryRepository.save(subCategoryEntity);
+      return modelMapper.map(updatedSubCategoryEntity, SubCategoryDto.class);
+    } catch (IOException e) {
+      throw new CategoryServiceException(MessageCode.FILE_CREATION_ERROR.name(),
+          Message.FILE_CREATION_ERROR.getMessage());
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
 }
