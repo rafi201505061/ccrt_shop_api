@@ -33,6 +33,13 @@ public class AppExceptionHandler {
     return new ResponseEntity<ResponseMessage>(errorMessage, new HttpHeaders(), exception.getHttpStatus());
   }
 
+  @ExceptionHandler(value = { CoverServiceException.class })
+  public ResponseEntity<ResponseMessage> handleCoverServiceException(CoverServiceException exception) {
+    ResponseMessage errorMessage = new ResponseMessage("COVER_SERVICE: " + exception.getCode(),
+        exception.getMessage());
+    return new ResponseEntity<ResponseMessage>(errorMessage, new HttpHeaders(), exception.getHttpStatus());
+  }
+
   @ExceptionHandler(value = { HttpMediaTypeNotSupportedException.class })
   public ResponseEntity<ResponseMessage> handleHttpMediaTypeNotSupportedException(
       HttpMediaTypeNotSupportedException exception) {

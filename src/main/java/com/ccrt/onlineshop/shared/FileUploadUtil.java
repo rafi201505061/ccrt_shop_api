@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class FileUploadUtil {
   public static final String CATEGORY_UPLOAD_DIR = "C:\\rakibul\\Office\\ccrt-online-shop-api\\online-shop\\categories";
+  public static final String COVER_UPLOAD_DIR = "C:\\rakibul\\Office\\ccrt-online-shop-api\\online-shop\\covers";
+
   // public static final String PROFILE_PICTURE_UPLOAD_DIR =
   // "C:\\rakibul\\Office\\CCRT Clinic\\ccrt-clinic\\public\\users";
   // public static final String APPOINTMENT_RESOURCES_UPLOAD_DIR =

@@ -29,6 +29,10 @@ public class Utils {
     return generateRandomString(length, DIGITS);
   }
 
+  public String generateImageId() {
+    return generateRandomString(15, ALPHABET);
+  }
+
   public String generatePasswordResetCode() {
     return generateRandomString(6, DIGITS);
   }
