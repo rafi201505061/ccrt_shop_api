@@ -1,5 +1,9 @@
 package com.ccrt.onlineshop.io.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -29,6 +34,9 @@ public class SubCategoryEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(nullable = false)
   private CategoryEntity category;
+
+  @OneToMany(mappedBy = "subCategory", fetch = FetchType.LAZY)
+  private Set<ProductEntity> products = new HashSet<>();
 
   public long getId() {
     return id;
@@ -68,5 +76,13 @@ public class SubCategoryEntity {
 
   public void setCategory(CategoryEntity category) {
     this.category = category;
+  }
+
+  public Set<ProductEntity> getProducts() {
+    return products;
+  }
+
+  public void setProducts(Set<ProductEntity> products) {
+    this.products = products;
   }
 }

@@ -22,4 +22,6 @@ public interface CategoryService {
   PromotedCategoryDto changePromotedCategory(PromotedCategoryDto promotedCategoryDto);
 
   List<PromotedCategoryDto> retrievePromotedCategories();
+
+  SubCategoryDto retrieveSubCategoryBySubCategoryId(String subCategoryId);
 }

@@ -1,7 +1,5 @@
 package com.ccrt.onlineshop.shared.dto;
 
-import java.util.Date;
-
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ccrt.onlineshop.enums.CoverType;

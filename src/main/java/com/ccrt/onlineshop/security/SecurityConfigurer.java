@@ -39,6 +39,7 @@ public class SecurityConfigurer {
         .hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, "/promoted-categories").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, "/covers").hasAnyAuthority(Role.ADMIN.name())
+        .antMatchers(HttpMethod.POST, "/products").hasAnyAuthority(Role.ADMIN.name())
 
         .antMatchers(HttpMethod.POST, SecurityConstants.LOG_IN_URL).permitAll()
         .antMatchers(HttpMethod.POST, "/users").permitAll()
@@ -51,6 +52,9 @@ public class SecurityConfigurer {
         .antMatchers(HttpMethod.GET, "/categories/{categoryId}/sub-categories").permitAll()
         .antMatchers(HttpMethod.GET, "/promoted-categories").permitAll()
         .antMatchers(HttpMethod.GET, "/covers").permitAll()
+        .antMatchers(HttpMethod.GET, "/products").permitAll()
+        .antMatchers(HttpMethod.GET, "/product-search").permitAll()
+        .antMatchers(HttpMethod.GET, "/products/{productId}").permitAll()
 
         .anyRequest()
         .authenticated().and()

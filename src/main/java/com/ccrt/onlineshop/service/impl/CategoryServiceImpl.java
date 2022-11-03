@@ -201,4 +201,14 @@ public class CategoryServiceImpl implements CategoryService {
     return promotedCategoryDtos;
   }
 
+  @Override
+  public SubCategoryDto retrieveSubCategoryBySubCategoryId(String subCategoryId) {
+    SubCategoryEntity subCategoryEntity = subCategoryRepository.findBySubCategoryId(subCategoryId);
+    if (subCategoryEntity == null) {
+      throw new CategoryServiceException(MessageCode.SUB_CATEGORY_NOT_FOUND.name(),
+          Message.SUB_CATEGORY_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+    }
+    return modelMapper.map(subCategoryEntity, SubCategoryDto.class);
+  }
+
 }

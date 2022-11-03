@@ -40,6 +40,13 @@ public class AppExceptionHandler {
     return new ResponseEntity<ResponseMessage>(errorMessage, new HttpHeaders(), exception.getHttpStatus());
   }
 
+  @ExceptionHandler(value = { ProductServiceException.class })
+  public ResponseEntity<ResponseMessage> handleProductServiceException(ProductServiceException exception) {
+    ResponseMessage errorMessage = new ResponseMessage("PRODUCT_SERVICE: " + exception.getCode(),
+        exception.getMessage());
+    return new ResponseEntity<ResponseMessage>(errorMessage, new HttpHeaders(), exception.getHttpStatus());
+  }
+
   @ExceptionHandler(value = { HttpMediaTypeNotSupportedException.class })
   public ResponseEntity<ResponseMessage> handleHttpMediaTypeNotSupportedException(
       HttpMediaTypeNotSupportedException exception) {
