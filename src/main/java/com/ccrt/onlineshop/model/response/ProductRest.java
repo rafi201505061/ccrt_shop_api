@@ -6,6 +6,7 @@ public class ProductRest {
   private String productId;
   private String title;
   private String description;
+  private double prevPrice;
   private double price;
   private String imageUrl;
   private long totalEntities;
@@ -74,5 +75,13 @@ public class ProductRest {
 
   public void setUsageStatus(UsageStatus usageStatus) {
     this.usageStatus = usageStatus;
+  }
+
+  public double getPrevPrice() {
+    return prevPrice;
+  }
+
+  public void setPrevPrice(double prevPrice) {
+    this.prevPrice = prevPrice;
   }
 }

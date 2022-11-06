@@ -6,22 +6,32 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ccrt.onlineshop.enums.Message;
+import com.ccrt.onlineshop.enums.MessageCode;
 import com.ccrt.onlineshop.enums.SortType;
 import com.ccrt.onlineshop.enums.SortValue;
+import com.ccrt.onlineshop.enums.UsageStatus;
+import com.ccrt.onlineshop.exceptions.ProductServiceException;
 import com.ccrt.onlineshop.model.request.ProductCreationRequestModel;
+import com.ccrt.onlineshop.model.request.ProductStockUpdateRequestModel;
+import com.ccrt.onlineshop.model.request.ProductUpdateRequestModel;
 import com.ccrt.onlineshop.model.response.ProductRest;
 import com.ccrt.onlineshop.service.ProductService;
+import com.ccrt.onlineshop.shared.Utils;
 import com.ccrt.onlineshop.shared.dto.ProductDto;
 
 @RestController
@@ -33,13 +43,17 @@ public class ProductController {
   @Autowired
   private ModelMapper modelMapper;
 
+  @Autowired
+  private Utils utils;
+
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ProductRest addProduct(@RequestPart(name = "image") MultipartFile image,
       @ModelAttribute ProductCreationRequestModel productCreationRequestModel, Principal principal) {
-    System.out.println(productCreationRequestModel.toString());
+    validateProductCreationRequestModel(productCreationRequestModel);
     ProductDto productDto = modelMapper.map(productCreationRequestModel, ProductDto.class);
     productDto.setImage(image);
     productDto.setUploaderUserId(principal.getName());
+
     ProductDto createdProductDto = productService.createProduct(productDto);
     return modelMapper.map(createdProductDto, ProductRest.class);
   }
@@ -65,5 +79,88 @@ public class ProductController {
   public ProductRest retrieveProduct(@PathVariable String productId) {
     ProductDto productDto = productService.retrieveProduct(productId);
     return modelMapper.map(productDto, ProductRest.class);
+  }
+
+  @PutMapping("/{productId}")
+  public ProductRest updateProduct(@PathVariable String productId,
+      @RequestBody ProductUpdateRequestModel productUpdateRequestModel) {
+    validateProductUpdateRequestModel(productUpdateRequestModel);
+    ProductDto productDto = modelMapper.map(productUpdateRequestModel, ProductDto.class);
+    ProductDto updatedProductDto = productService.updateProduct(productId, productDto);
+    return modelMapper.map(updatedProductDto, ProductRest.class);
+  }
+
+  @PutMapping(value = "/{productId}/image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+  public ProductRest updateProductImage(@PathVariable String productId,
+      @RequestPart(required = true, name = "image") MultipartFile image) {
+    ProductDto updatedProductDto = productService.updateImage(productId, image);
+    return modelMapper.map(updatedProductDto, ProductRest.class);
+  }
+
+  @PutMapping(value = "/{productId}/stock")
+  public ProductRest updateProductStock(@PathVariable String productId,
+      @RequestBody ProductStockUpdateRequestModel productStockUpdateRequestModel) {
+    long numEntities = productStockUpdateRequestModel.getNumEntities();
+    if (numEntities <= 0)
+      throw new ProductServiceException(MessageCode.TOTAL_ENTITIES_NOT_VALID.name(),
+          Message.TOTAL_ENTITIES_NOT_VALID.getMessage(),
+          HttpStatus.BAD_REQUEST);
+    ProductDto updatedProductDto = productService.updateStock(productId, numEntities);
+    return modelMapper.map(updatedProductDto, ProductRest.class);
+  }
+
+  public void validateProductCreationRequestModel(ProductCreationRequestModel productCreationRequestModel) {
+    String title = productCreationRequestModel.getTitle();
+    double price = productCreationRequestModel.getPrice();
+    UsageStatus usageStatus = productCreationRequestModel.getUsageStatus();
+    String subCategoryId = productCreationRequestModel.getSubCategoryId();
+    long totalEntities = productCreationRequestModel.getTotalEntities();
+
+    boolean isTitleValid = utils.isNonNullAndNonEmpty(title);
+    boolean isPriceValid = price > 0;
+    boolean isUsageStatusValid = usageStatus != null;
+    boolean isSubCategoryIdValid = utils.isNonNullAndNonEmpty(subCategoryId);
+    boolean isTotalEntitiesValid = totalEntities > 0;
+    if (!isTitleValid) {
+      throw new ProductServiceException(MessageCode.TITLE_NOT_VALID.name(), Message.TITLE_NOT_VALID.getMessage(),
+          HttpStatus.BAD_REQUEST);
+    }
+
+    if (!isPriceValid) {
+      throw new ProductServiceException(MessageCode.PRICE_NOT_VALID.name(), Message.PRICE_NOT_VALID.getMessage(),
+          HttpStatus.BAD_REQUEST);
+    }
+
+    if (!isUsageStatusValid) {
+      throw new ProductServiceException(MessageCode.USAGE_STATUS_NOT_VALID.name(),
+          Message.USAGE_STATUS_NOT_VALID.getMessage(),
+          HttpStatus.BAD_REQUEST);
+    }
+
+    if (!isSubCategoryIdValid) {
+      throw new ProductServiceException(MessageCode.SUB_CATEGORY_NOT_FOUND.name(),
+          Message.SUB_CATEGORY_NOT_FOUND.getMessage(),
+          HttpStatus.BAD_REQUEST);
+    }
+
+    if (!isTotalEntitiesValid) {
+      throw new ProductServiceException(MessageCode.TOTAL_ENTITIES_NOT_VALID.name(),
+          Message.TOTAL_ENTITIES_NOT_VALID.getMessage(),
+          HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public void validateProductUpdateRequestModel(ProductUpdateRequestModel productUpdateRequestModel) {
+    String title = productUpdateRequestModel.getTitle();
+    String description = productUpdateRequestModel.getDescription();
+    double price = productUpdateRequestModel.getPrice();
+    boolean isTitleValid = utils.isNonNullAndNonEmpty(title);
+    boolean isDescriptionValid = utils.isNonNullAndNonEmpty(description);
+    boolean isPriceValid = price > 0;
+    if (!isTitleValid && !isDescriptionValid && !isPriceValid) {
+      throw new ProductServiceException(MessageCode.BAD_REQUEST.name(),
+          "You must provide valid value any of the field [title/description/price(positive)] to update.",
+          HttpStatus.BAD_REQUEST);
+    }
   }
 }

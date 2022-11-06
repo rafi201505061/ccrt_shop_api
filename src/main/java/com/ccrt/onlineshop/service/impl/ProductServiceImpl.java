@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ccrt.onlineshop.enums.Message;
 import com.ccrt.onlineshop.enums.MessageCode;
@@ -58,6 +59,7 @@ public class ProductServiceImpl implements ProductService {
           .setUploader(userRepository.findByUserId(productDto.getUploaderUserId()));
       productEntity.setSubCategory(
           subCategoryRepository.findBySubCategoryId(productDto.getSubCategoryId()));
+      productEntity.setPrevPrice(productDto.getPrevPrice());
       String productId = utils.generateProductId();
       String imageName = productId + "." + utils.getFileExtension(productDto.getImage().getOriginalFilename());
       fileUploadUtil.saveFile(FileUploadUtil.PRODUCT_UPLOAD_DIR, imageName, productDto.getImage());
@@ -138,6 +140,67 @@ public class ProductServiceImpl implements ProductService {
       }
     }
     return sort;
+  }
+
+  @Transactional
+  @Override
+  public ProductDto updateProduct(String productId, ProductDto productDto) {
+    ProductEntity productEntity = productRepository.findByProductId(productId);
+    if (productEntity == null) {
+      throw new ProductServiceException(MessageCode.PRODUCT_NOT_FOUND.name(), Message.PRODUCT_NOT_FOUND.getMessage(),
+          HttpStatus.NOT_FOUND);
+    }
+    if (productDto.getTitle() != null)
+      productEntity.setTitle(productDto.getTitle());
+    if (productDto.getDescription() != null)
+      productEntity.setDescription(productDto.getDescription());
+
+    if (productDto.getPrice() != 0) {
+      productEntity.setPrevPrice(productEntity.getPrice());
+      productEntity.setPrice(productDto.getPrice());
+    }
+
+    ProductEntity updatedProductEntity = productRepository.save(productEntity);
+    return modelMapper.map(updatedProductEntity, ProductDto.class);
+  }
+
+  @Transactional
+  @Override
+  public ProductDto updateImage(String productId, MultipartFile image) {
+
+    try {
+      ProductEntity productEntity = productRepository.findByProductId(productId);
+      if (productEntity == null) {
+        throw new ProductServiceException(MessageCode.PRODUCT_NOT_FOUND.name(), Message.PRODUCT_NOT_FOUND.getMessage(),
+            HttpStatus.NOT_FOUND);
+      }
+      if (image.isEmpty()) {
+        throw new ProductServiceException(MessageCode.IMAGE_NOT_VALID.name(), Message.IMAGE_NOT_VALID.getMessage(),
+            HttpStatus.NOT_FOUND);
+      }
+      String imageName = productId + "." + utils.getFileExtension(image.getOriginalFilename());
+      fileUploadUtil.saveFile(FileUploadUtil.PRODUCT_UPLOAD_DIR, imageName, image);
+      productEntity.setImageUrl(FileUploadUtil.PRODUCT_UPLOAD_DIR + "\\" + imageName);
+      ProductEntity createdProductEntity = productRepository.save(productEntity);
+      return modelMapper.map(createdProductEntity, ProductDto.class);
+    } catch (IOException e) {
+      throw new ProductServiceException(MessageCode.FILE_CREATION_ERROR.name(),
+          Message.FILE_CREATION_ERROR.getMessage());
+    }
+
+  }
+
+  @Transactional
+  @Override
+  public ProductDto updateStock(String productId, long numEntities) {
+    ProductEntity productEntity = productRepository.findByProductId(productId);
+    if (productEntity == null) {
+      throw new ProductServiceException(MessageCode.PRODUCT_NOT_FOUND.name(), Message.PRODUCT_NOT_FOUND.getMessage(),
+          HttpStatus.NOT_FOUND);
+    }
+    productEntity.setTotalEntities(productEntity.getTotalEntities() + numEntities);
+    ProductEntity createdProductEntity = productRepository.save(productEntity);
+    return modelMapper.map(createdProductEntity, ProductDto.class);
   }
 
 }

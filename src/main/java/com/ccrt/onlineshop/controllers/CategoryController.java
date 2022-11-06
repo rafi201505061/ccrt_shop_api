@@ -109,7 +109,7 @@ public class CategoryController {
           HttpStatus.BAD_REQUEST);
     }
 
-    if (image == null) {
+    if (image.isEmpty()) {
       throw new CategoryServiceException(MessageCode.IMAGE_NOT_VALID.name(), Message.IMAGE_NOT_VALID.getMessage(),
           HttpStatus.BAD_REQUEST);
     }
@@ -118,7 +118,7 @@ public class CategoryController {
   private void checkCategoryUpdateRequestModel(CategoryCreationRequestModel categoryCreationRequestModel,
       MultipartFile image) {
     String title = categoryCreationRequestModel.getTitle();
-    if (image == null && title == null) {
+    if (image.isEmpty() && title == null) {
       throw new CategoryServiceException("BAD_REQUEST",
           "You must provide either title or image or both to update title or image or both.",
           HttpStatus.BAD_REQUEST);
@@ -129,7 +129,7 @@ public class CategoryController {
   private void checkSubCategoryUpdateRequestModel(SubCategoryCreationRequestModel subCategoryCreationRequestModel,
       MultipartFile image) {
     String title = subCategoryCreationRequestModel.getTitle();
-    if (image == null && title == null) {
+    if (image.isEmpty() && title == null) {
       throw new CategoryServiceException("BAD_REQUEST",
           "You must provide either title or image or both to update title or image or both.",
           HttpStatus.BAD_REQUEST);
@@ -144,7 +144,7 @@ public class CategoryController {
       throw new CategoryServiceException(MessageCode.TITLE_NOT_VALID.name(), Message.TITLE_NOT_VALID.getMessage(),
           HttpStatus.BAD_REQUEST);
     }
-    if (image == null) {
+    if (image.isEmpty()) {
       throw new CategoryServiceException(MessageCode.IMAGE_NOT_VALID.name(), Message.IMAGE_NOT_VALID.getMessage(),
           HttpStatus.BAD_REQUEST);
     }

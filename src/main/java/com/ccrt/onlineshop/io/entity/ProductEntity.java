@@ -38,6 +38,9 @@ public class ProductEntity {
   private String description;
 
   @Column(nullable = false)
+  private double prevPrice = 0;
+
+  @Column(nullable = false)
   private double price;
 
   @Column(nullable = false, length = 250)
@@ -159,6 +162,14 @@ public class ProductEntity {
 
   public void setUsageStatus(UsageStatus usageStatus) {
     this.usageStatus = usageStatus;
+  }
+
+  public double getPrevPrice() {
+    return prevPrice;
+  }
+
+  public void setPrevPrice(double prevPrice) {
+    this.prevPrice = prevPrice;
   }
 
 }

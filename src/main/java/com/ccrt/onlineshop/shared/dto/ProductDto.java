@@ -8,6 +8,7 @@ public class ProductDto {
   private String productId;
   private String title;
   private String description;
+  private double prevPrice;
   private double price;
   private MultipartFile image;
   private String imageUrl;
@@ -103,5 +104,13 @@ public class ProductDto {
 
   public void setUploaderUserId(String uploaderUserId) {
     this.uploaderUserId = uploaderUserId;
+  }
+
+  public double getPrevPrice() {
+    return prevPrice;
+  }
+
+  public void setPrevPrice(double prevPrice) {
+    this.prevPrice = prevPrice;
   }
 }
