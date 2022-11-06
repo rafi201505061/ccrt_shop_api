@@ -41,6 +41,10 @@ public class Utils {
     return generateRandomString(length, ALPHABET);
   }
 
+  public String generateAddressId() {
+    return generateRandomString(15, ALPHABET);
+  }
+
   public String generateCategoryId() {
     return generateRandomString(11, ALPHABET);
   }

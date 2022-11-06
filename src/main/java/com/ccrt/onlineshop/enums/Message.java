@@ -20,6 +20,7 @@ public enum Message {
   SUB_CATEGORY_NOT_FOUND("Sub category couldn't be found."),
   PRODUCT_NOT_FOUND("Product couldn't be found."),
   INVALID_TYPE("You must provide a valid type"),
+  ADDRESS_NOT_FOUND("Address couldn't be found."),
   USER_OTP_SERVICE_BLOCKED(
       "Too many requests within a short amount of time. User is blocked temporarily. Please try again later."),
   USER_NOT_FOUND("USER_NOT_FOUND");

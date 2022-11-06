@@ -7,10 +7,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.ccrt.onlineshop.enums.Role;
@@ -45,6 +48,14 @@ public class UserEntity {
 
   @OneToMany(mappedBy = "uploader")
   private Set<ProductEntity> products = new HashSet<>();
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(nullable = false)
+  private AddressEntity defaultShippingAddress;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(nullable = false)
+  private AddressEntity defaultBillingAddress;
 
   public long getId() {
     return id;
@@ -108,6 +119,30 @@ public class UserEntity {
 
   public void setPasswordResetToken(String passwordResetToken) {
     this.passwordResetToken = passwordResetToken;
+  }
+
+  public Set<ProductEntity> getProducts() {
+    return products;
+  }
+
+  public void setProducts(Set<ProductEntity> products) {
+    this.products = products;
+  }
+
+  public AddressEntity getDefaultShippingAddress() {
+    return defaultShippingAddress;
+  }
+
+  public void setDefaultShippingAddress(AddressEntity defaultShippingAddress) {
+    this.defaultShippingAddress = defaultShippingAddress;
+  }
+
+  public AddressEntity getDefaultBillingAddress() {
+    return defaultBillingAddress;
+  }
+
+  public void setDefaultBillingAddress(AddressEntity defaultBillingAddress) {
+    this.defaultBillingAddress = defaultBillingAddress;
   }
 
 }
