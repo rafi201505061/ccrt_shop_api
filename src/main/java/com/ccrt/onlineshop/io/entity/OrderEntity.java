@@ -79,6 +79,9 @@ public class OrderEntity {
   @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
   private Set<OrderItemEntity> orderItems;
 
+  @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+  private Set<OrderStatusEntity> orderStatusTimeline;
+
   public long getId() {
     return id;
   }
@@ -189,5 +192,13 @@ public class OrderEntity {
 
   public void setOrderItems(Set<OrderItemEntity> orderItems) {
     this.orderItems = orderItems;
+  }
+
+  public Set<OrderStatusEntity> getOrderStatusTimeline() {
+    return orderStatusTimeline;
+  }
+
+  public void setOrderStatusTimeline(Set<OrderStatusEntity> orderStatusTimeline) {
+    this.orderStatusTimeline = orderStatusTimeline;
   }
 }
