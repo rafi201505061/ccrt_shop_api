@@ -12,6 +12,7 @@ public class ProductRest {
   private long totalEntities;
   private long remainingEntities;
   private UsageStatus usageStatus;
+  private double averageRating;
 
   public String getProductId() {
     return productId;
@@ -83,5 +84,13 @@ public class ProductRest {
 
   public void setPrevPrice(double prevPrice) {
     this.prevPrice = prevPrice;
+  }
+
+  public double getAverageRating() {
+    return averageRating;
+  }
+
+  public void setAverageRating(double averageRating) {
+    this.averageRating = averageRating;
   }
 }

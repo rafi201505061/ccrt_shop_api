@@ -25,7 +25,7 @@ import com.ccrt.onlineshop.enums.PaymentStatus;
 import com.ccrt.onlineshop.enums.PaymentType;
 
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 public class OrderEntity {
 
   @Id
@@ -56,6 +56,9 @@ public class OrderEntity {
 
   @Column(nullable = false)
   private double deliveryCost;
+
+  @Column(nullable = false)
+  private double totalCost;
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
@@ -200,5 +203,13 @@ public class OrderEntity {
 
   public void setOrderStatusTimeline(Set<OrderStatusEntity> orderStatusTimeline) {
     this.orderStatusTimeline = orderStatusTimeline;
+  }
+
+  public double getTotalCost() {
+    return totalCost;
+  }
+
+  public void setTotalCost(double totalCost) {
+    this.totalCost = totalCost;
   }
 }

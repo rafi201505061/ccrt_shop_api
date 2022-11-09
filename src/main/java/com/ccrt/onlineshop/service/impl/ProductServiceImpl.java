@@ -20,7 +20,10 @@ import com.ccrt.onlineshop.enums.SortType;
 import com.ccrt.onlineshop.enums.SortValue;
 import com.ccrt.onlineshop.exceptions.ProductServiceException;
 import com.ccrt.onlineshop.io.entity.ProductEntity;
+import com.ccrt.onlineshop.io.entity.RatingEntity;
+import com.ccrt.onlineshop.io.entity.UserEntity;
 import com.ccrt.onlineshop.io.repository.ProductRepository;
+import com.ccrt.onlineshop.io.repository.RatingRepository;
 import com.ccrt.onlineshop.io.repository.SubCategoryRepository;
 import com.ccrt.onlineshop.io.repository.UserRepository;
 import com.ccrt.onlineshop.service.ProductService;
@@ -45,6 +48,9 @@ public class ProductServiceImpl implements ProductService {
 
   @Autowired
   private SubCategoryRepository subCategoryRepository;
+
+  @Autowired
+  private RatingRepository ratingRepository;
 
   @Autowired
   private ModelMapper modelMapper;
@@ -201,6 +207,73 @@ public class ProductServiceImpl implements ProductService {
     productEntity.setTotalEntities(productEntity.getTotalEntities() + numEntities);
     ProductEntity createdProductEntity = productRepository.save(productEntity);
     return modelMapper.map(createdProductEntity, ProductDto.class);
+  }
+
+  @Transactional
+  @Override
+  public ProductDto addRating(String productId, ProductDto productDto) {
+    ProductEntity productEntity = productRepository.findByProductId(productId);
+    if (productEntity == null) {
+      throw new ProductServiceException(MessageCode.PRODUCT_NOT_FOUND.name(), Message.PRODUCT_NOT_FOUND.getMessage(),
+          HttpStatus.NOT_FOUND);
+    }
+    UserEntity userEntity = userRepository.findByUserId(productDto.getRaterUserId());
+    if (userEntity == null) {
+      throw new ProductServiceException(MessageCode.USER_NOT_FOUND.name(), Message.USER_NOT_FOUND.getMessage(),
+          HttpStatus.NOT_FOUND);
+    }
+    RatingEntity foundRatingEntity = ratingRepository.findByUser_UserIdAndProduct_ProductId(productDto.getRaterUserId(),
+        productId);
+    if (foundRatingEntity != null) {
+      throw new ProductServiceException(MessageCode.RATING_ALREADY_EXISTS.name(),
+          Message.RATING_ALREADY_EXISTS.getMessage(),
+          HttpStatus.CONFLICT);
+    }
+    double newAverageRating = (productEntity.getAverageRating() * productEntity.getTotalRater()
+        + productDto.getRating()) / (productEntity.getTotalRater() + 1);
+    productEntity.setAverageRating(newAverageRating);
+    productEntity.setTotalRater(productEntity.getTotalRater() + 1);
+    ProductEntity createdProductEntity = productRepository.save(productEntity);
+    RatingEntity ratingEntity = new RatingEntity();
+    ratingEntity.setProduct(productEntity);
+    ratingEntity.setUser(userEntity);
+    ratingEntity.setRating(productDto.getRating());
+    ratingRepository.save(ratingEntity);
+    return modelMapper.map(createdProductEntity, ProductDto.class);
+  }
+
+  @Transactional
+  @Override
+  public ProductDto updateRating(String productId, ProductDto productDto) {
+    ProductEntity productEntity = productRepository.findByProductId(productId);
+    if (productEntity == null) {
+      throw new ProductServiceException(MessageCode.PRODUCT_NOT_FOUND.name(), Message.PRODUCT_NOT_FOUND.getMessage(),
+          HttpStatus.NOT_FOUND);
+    }
+
+    RatingEntity foundRatingEntity = ratingRepository.findByUser_UserIdAndProduct_ProductId(productDto.getRaterUserId(),
+        productId);
+    if (foundRatingEntity == null) {
+      throw new ProductServiceException(MessageCode.RATING_NOT_FOUND.name(),
+          Message.RATING_NOT_FOUND.getMessage(),
+          HttpStatus.CONFLICT);
+    }
+    double newAverageRating = (productEntity.getAverageRating() * productEntity.getTotalRater()
+        + productDto.getRating() - foundRatingEntity.getRating()) / (productEntity.getTotalRater());
+    productEntity.setAverageRating(newAverageRating);
+    ProductEntity createdProductEntity = productRepository.save(productEntity);
+    foundRatingEntity.setRating(productDto.getRating());
+    ratingRepository.save(foundRatingEntity);
+    return modelMapper.map(createdProductEntity, ProductDto.class);
+  }
+
+  @Override
+  public double retrieveRating(String productId, String userId) {
+    RatingEntity foundRatingEntity = ratingRepository.findByUser_UserIdAndProduct_ProductId(userId,
+        productId);
+    if (foundRatingEntity == null)
+      return 0;
+    return foundRatingEntity.getRating();
   }
 
 }

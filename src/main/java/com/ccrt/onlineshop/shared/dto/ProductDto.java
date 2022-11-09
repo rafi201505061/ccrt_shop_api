@@ -17,6 +17,9 @@ public class ProductDto {
   private String subCategoryId;
   private UsageStatus usageStatus;
   private String uploaderUserId;
+  private double averageRating;
+  private double rating;
+  private String raterUserId;
 
   public String getProductId() {
     return productId;
@@ -113,4 +116,29 @@ public class ProductDto {
   public void setPrevPrice(double prevPrice) {
     this.prevPrice = prevPrice;
   }
+
+  public double getAverageRating() {
+    return averageRating;
+  }
+
+  public void setAverageRating(double averageRating) {
+    this.averageRating = averageRating;
+  }
+
+  public double getRating() {
+    return rating;
+  }
+
+  public void setRating(double rating) {
+    this.rating = rating;
+  }
+
+  public String getRaterUserId() {
+    return raterUserId;
+  }
+
+  public void setRaterUserId(String raterUserId) {
+    this.raterUserId = raterUserId;
+  }
+
 }

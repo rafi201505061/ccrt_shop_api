@@ -27,6 +27,7 @@ import com.ccrt.onlineshop.enums.SortValue;
 import com.ccrt.onlineshop.enums.UsageStatus;
 import com.ccrt.onlineshop.exceptions.ProductServiceException;
 import com.ccrt.onlineshop.model.request.ProductCreationRequestModel;
+import com.ccrt.onlineshop.model.request.ProductRatingRequestModel;
 import com.ccrt.onlineshop.model.request.ProductStockUpdateRequestModel;
 import com.ccrt.onlineshop.model.request.ProductUpdateRequestModel;
 import com.ccrt.onlineshop.model.response.ProductRest;
@@ -107,6 +108,42 @@ public class ProductController {
           HttpStatus.BAD_REQUEST);
     ProductDto updatedProductDto = productService.updateStock(productId, numEntities);
     return modelMapper.map(updatedProductDto, ProductRest.class);
+  }
+
+  @PostMapping(value = "/{productId}/rating")
+  public ProductRest addRating(@PathVariable String productId,
+      @RequestBody ProductRatingRequestModel productRatingRequestModel, Principal principal) {
+    if (!principal.getName().equals(productRatingRequestModel.getRaterUserId())) {
+      throw new ProductServiceException(MessageCode.FORBIDDEN.name(), Message.FORBIDDEN.getMessage(),
+          HttpStatus.FORBIDDEN);
+    }
+    ProductDto updatedProductDto = productService.addRating(productId,
+        modelMapper.map(productRatingRequestModel, ProductDto.class));
+    return modelMapper.map(updatedProductDto, ProductRest.class);
+  }
+
+  @PutMapping(value = "/{productId}/rating")
+  public ProductRest updateRating(@PathVariable String productId,
+      @RequestBody ProductRatingRequestModel productRatingRequestModel, Principal principal) {
+    if (!principal.getName().equals(productRatingRequestModel.getRaterUserId())) {
+      throw new ProductServiceException(MessageCode.FORBIDDEN.name(), Message.FORBIDDEN.getMessage(),
+          HttpStatus.FORBIDDEN);
+    }
+    ProductDto updatedProductDto = productService.updateRating(productId,
+        modelMapper.map(productRatingRequestModel, ProductDto.class));
+    return modelMapper.map(updatedProductDto, ProductRest.class);
+  }
+
+  @GetMapping(value = "/{productId}/rating")
+  public double retrieveRating(@PathVariable String productId,
+      @RequestParam(name = "userId", required = true) String userId, Principal principal) {
+    if (!principal.getName().equals(userId)) {
+      throw new ProductServiceException(MessageCode.FORBIDDEN.name(), Message.FORBIDDEN.getMessage(),
+          HttpStatus.FORBIDDEN);
+    }
+    return productService.retrieveRating(productId,
+        userId);
+
   }
 
   public void validateProductCreationRequestModel(ProductCreationRequestModel productCreationRequestModel) {

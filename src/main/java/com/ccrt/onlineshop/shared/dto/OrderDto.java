@@ -3,6 +3,7 @@ package com.ccrt.onlineshop.shared.dto;
 import java.util.Date;
 import java.util.List;
 
+import com.ccrt.onlineshop.enums.DeliveryPlaceType;
 import com.ccrt.onlineshop.enums.OrderStatus;
 import com.ccrt.onlineshop.enums.PaymentStatus;
 import com.ccrt.onlineshop.enums.PaymentType;
@@ -19,6 +20,9 @@ public class OrderDto {
   private PaymentStatus paymentStatus;
   private List<OrderItemDto> orderItems;
   private List<OrderStatusDto> orderStatusTimeline;
+  private String billingAddressId;
+  private String shippingAddressId;
+  private DeliveryPlaceType place;
 
   public String getOrderId() {
     return orderId;
@@ -106,6 +110,30 @@ public class OrderDto {
 
   public void setOrderStatusTimeline(List<OrderStatusDto> orderStatusTimeline) {
     this.orderStatusTimeline = orderStatusTimeline;
+  }
+
+  public String getBillingAddressId() {
+    return billingAddressId;
+  }
+
+  public void setBillingAddressId(String billingAddressId) {
+    this.billingAddressId = billingAddressId;
+  }
+
+  public String getShippingAddressId() {
+    return shippingAddressId;
+  }
+
+  public void setShippingAddressId(String shippingAddressId) {
+    this.shippingAddressId = shippingAddressId;
+  }
+
+  public DeliveryPlaceType getPlace() {
+    return place;
+  }
+
+  public void setPlace(DeliveryPlaceType place) {
+    this.place = place;
   }
 
 }

@@ -1,11 +1,14 @@
 package com.ccrt.onlineshop.controllers;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,15 +21,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ccrt.onlineshop.enums.Message;
 import com.ccrt.onlineshop.enums.MessageCode;
 import com.ccrt.onlineshop.enums.Role;
+import com.ccrt.onlineshop.exceptions.OrderServiceException;
 import com.ccrt.onlineshop.exceptions.UserServiceException;
+import com.ccrt.onlineshop.model.request.OrderCreationRequestModel;
 import com.ccrt.onlineshop.model.request.UserPasswordResetRequestModel;
 import com.ccrt.onlineshop.model.request.UserPasswordUpdateRequestModel;
 import com.ccrt.onlineshop.model.request.UserSignupRequestModel;
 import com.ccrt.onlineshop.model.request.UserUpdateRequestModel;
+import com.ccrt.onlineshop.model.response.OrderRest;
 import com.ccrt.onlineshop.model.response.ResponseMessage;
 import com.ccrt.onlineshop.model.response.UserRest;
+import com.ccrt.onlineshop.service.OrderService;
 import com.ccrt.onlineshop.service.UserService;
 import com.ccrt.onlineshop.shared.Utils;
+import com.ccrt.onlineshop.shared.dto.OrderDto;
 import com.ccrt.onlineshop.shared.dto.UserDto;
 
 @RestController
@@ -37,6 +45,9 @@ public class UserController {
 
   @Autowired
   private ModelMapper modelMapper;
+
+  @Autowired
+  private OrderService orderService;
 
   @Autowired
   private Utils utils;
@@ -105,6 +116,46 @@ public class UserController {
     userService.resetPassword(userId, modelMapper.map(userPasswordResetRequestModel, UserDto.class));
     return new ResponseEntity<ResponseMessage>(new ResponseMessage(MessageCode.PASSWORD_RESET_SUCCESSFUL.name(),
         Message.PASSWORD_RESET_SUCCESSFUL.getMessage()), HttpStatus.OK);
+  }
+
+  @PostMapping("/{userId}/orders")
+  public OrderRest createOrder(@PathVariable String userId, Principal principal,
+      @RequestBody OrderCreationRequestModel orderCreationRequestModel) {
+    if (!principal.getName().equals(userId)) {
+      throw new OrderServiceException(MessageCode.FORBIDDEN.name(), Message.FORBIDDEN.getMessage(),
+          HttpStatus.FORBIDDEN);
+    }
+    OrderDto orderDto = modelMapper.map(orderCreationRequestModel, OrderDto.class);
+    OrderDto createdOrderDto = orderService.createOrder(userId, orderDto);
+    return modelMapper.map(createdOrderDto, OrderRest.class);
+  }
+
+  @GetMapping("/{userId}/orders")
+  public List<OrderRest> retrieveOrders(@PathVariable String userId, Principal principal,
+      @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+      @RequestParam(name = "limit", required = false, defaultValue = "15") int limit) {
+    if (!principal.getName().equals(userId)) {
+      throw new OrderServiceException(MessageCode.FORBIDDEN.name(), Message.FORBIDDEN.getMessage(),
+          HttpStatus.FORBIDDEN);
+    }
+    List<OrderDto> orderDtos = orderService.retrieveOrders(userId, page, limit);
+    List<OrderRest> orderRests = new ArrayList<>();
+    for (OrderDto orderDto : orderDtos) {
+      orderRests.add(modelMapper.map(orderDto, OrderRest.class));
+    }
+    return orderRests;
+  }
+
+  @DeleteMapping("/{userId}/orders/{orderId}")
+  public ResponseEntity<String> cancelOrder(@PathVariable String userId, Principal principal,
+      @PathVariable String orderId) {
+    if (!principal.getName().equals(userId)) {
+      throw new OrderServiceException(MessageCode.FORBIDDEN.name(), Message.FORBIDDEN.getMessage(),
+          HttpStatus.FORBIDDEN);
+    }
+    orderService.cancelOrder(userId, orderId);
+    return new ResponseEntity<>(HttpStatus.OK);
+
   }
 
   private UserRest userCreationHelper(UserSignupRequestModel userSignupRequestModel, Role role) {

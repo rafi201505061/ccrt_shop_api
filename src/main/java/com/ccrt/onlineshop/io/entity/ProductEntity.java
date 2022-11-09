@@ -1,6 +1,7 @@
 package com.ccrt.onlineshop.io.entity;
 
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -67,6 +69,12 @@ public class ProductEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(nullable = false)
   private SubCategoryEntity subCategory;
+
+  private double averageRating;
+  private long totalRater;
+
+  @OneToMany(mappedBy = "product")
+  private Set<OrderItemEntity> orderItems;
 
   public long getId() {
     return id;
@@ -170,6 +178,30 @@ public class ProductEntity {
 
   public void setPrevPrice(double prevPrice) {
     this.prevPrice = prevPrice;
+  }
+
+  public Set<OrderItemEntity> getOrderItems() {
+    return orderItems;
+  }
+
+  public void setOrderItems(Set<OrderItemEntity> orderItems) {
+    this.orderItems = orderItems;
+  }
+
+  public double getAverageRating() {
+    return averageRating;
+  }
+
+  public void setAverageRating(double averageRating) {
+    this.averageRating = averageRating;
+  }
+
+  public long getTotalRater() {
+    return totalRater;
+  }
+
+  public void setTotalRater(long totalRater) {
+    this.totalRater = totalRater;
   }
 
 }

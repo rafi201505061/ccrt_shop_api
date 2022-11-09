@@ -25,4 +25,10 @@ public interface ProductService {
 
 	ProductDto updateStock(String productId, long numEntities);
 
+	ProductDto addRating(String productId, ProductDto productDto);
+
+	ProductDto updateRating(String productId, ProductDto productDto);
+
+	double retrieveRating(String productId, String userId);
+
 }
