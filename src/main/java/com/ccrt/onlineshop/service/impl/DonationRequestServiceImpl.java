@@ -62,6 +62,11 @@ public class DonationRequestServiceImpl implements DonationRequestService {
       throw new DonationServiceException(MessageCode.DONATION_NOT_FOUND.name(), Message.DONATION_NOT_FOUND.getMessage(),
           HttpStatus.NOT_FOUND);
     }
+    if (donationRequestEntity.getStatus() != DonationRequestStatus.PENDING) {
+      throw new DonationServiceException(MessageCode.STATUS_NOT_VALID.name(), Message.STATUS_NOT_VALID.getMessage(),
+          HttpStatus.NOT_FOUND);
+    }
+
     donationRequestEntity.setStatus(donationRequestDto.getStatus());
     DonationRequestEntity updatedDonationRequestEntity = donationRequestRepository.save(donationRequestEntity);
     return modelMapper.map(updatedDonationRequestEntity, DonationRequestDto.class);

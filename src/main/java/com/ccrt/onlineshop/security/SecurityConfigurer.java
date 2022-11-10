@@ -39,7 +39,8 @@ public class SecurityConfigurer {
         .antMatchers(HttpMethod.PUT, "/categories/{categoryId}/sub-categories/{subCategoryId}")
         .hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, "/promoted-categories").hasAnyAuthority(Role.ADMIN.name())
-        .antMatchers(HttpMethod.POST, "/donation-requests/{requestId}").hasAnyAuthority(Role.ADMIN.name())
+        .antMatchers(HttpMethod.PUT, "/donation-requests/{requestId}").hasAnyAuthority(Role.ADMIN.name())
+        .antMatchers(HttpMethod.GET, "/donation-requests").hasAnyAuthority(Role.ADMIN.name())
 
         .antMatchers(HttpMethod.POST, "/covers").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, "/products").hasAnyAuthority(Role.ADMIN.name())
@@ -60,6 +61,7 @@ public class SecurityConfigurer {
         .antMatchers(HttpMethod.GET, "/products").permitAll()
         .antMatchers(HttpMethod.GET, "/product-search").permitAll()
         .antMatchers(HttpMethod.GET, "/products/{productId}").permitAll()
+        .antMatchers(HttpMethod.POST, "/donation-requests").permitAll()
 
         .anyRequest()
         .authenticated().and()

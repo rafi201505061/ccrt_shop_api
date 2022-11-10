@@ -8,6 +8,7 @@ public enum Message {
   FORBIDDEN("You are not allowed to perform this action."),
   BAD_REQUEST("You must provide all necessary fields."),
   WRONG_PASSWORD("You have provided wrong password."),
+  STATUS_NOT_VALID("Status is not valid."),
   DONATION_NOT_FOUND("Donation request couldn't be found."),
   PASSWORD_UPDATE_SUCCESSFUL("Password has been updated successfully."),
   PASSWORD_RESET_SUCCESSFUL("Password has been reset successfully."),

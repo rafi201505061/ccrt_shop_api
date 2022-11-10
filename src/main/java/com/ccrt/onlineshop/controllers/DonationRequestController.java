@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ccrt.onlineshop.enums.DonationRequestStatus;
+import com.ccrt.onlineshop.enums.MessageCode;
+import com.ccrt.onlineshop.exceptions.DonationServiceException;
 import com.ccrt.onlineshop.model.request.DonationRequestCreationRequestModel;
 import com.ccrt.onlineshop.model.request.DonationStatusUpdateRequestModel;
 import com.ccrt.onlineshop.model.response.DonationRequestRest;
 import com.ccrt.onlineshop.service.DonationRequestService;
+import com.ccrt.onlineshop.shared.Utils;
 import com.ccrt.onlineshop.shared.dto.DonationRequestDto;
 
 @RestController
@@ -29,9 +33,13 @@ public class DonationRequestController {
   @Autowired
   private ModelMapper modelMapper;
 
+  @Autowired
+  private Utils utils;
+
   @PostMapping
   public DonationRequestRest createDonationRequest(
       @RequestBody DonationRequestCreationRequestModel donationRequestCreationRequestModel) {
+    checkDonationRequestCreationRequestModel(donationRequestCreationRequestModel);
     DonationRequestDto donationRequestDto = modelMapper.map(donationRequestCreationRequestModel,
         DonationRequestDto.class);
     DonationRequestDto createdDonationRequestDto = donationRequestService.createDonationRequest(donationRequestDto);
@@ -54,8 +62,56 @@ public class DonationRequestController {
   @PutMapping("/{requestId}")
   public DonationRequestRest updateStatus(@PathVariable String requestId,
       @RequestBody DonationStatusUpdateRequestModel donationStatusUpdateRequestModel) {
+    checkDonationStatusUpdateRequestModel(donationStatusUpdateRequestModel);
     DonationRequestDto donationRequestDto = modelMapper.map(donationStatusUpdateRequestModel, DonationRequestDto.class);
     DonationRequestDto updatedDonationRequestDto = donationRequestService.updateStatus(requestId, donationRequestDto);
     return modelMapper.map(updatedDonationRequestDto, DonationRequestRest.class);
+  }
+
+  private void checkDonationStatusUpdateRequestModel(
+      DonationStatusUpdateRequestModel donationStatusUpdateRequestModel) {
+    DonationRequestStatus status = donationStatusUpdateRequestModel.getStatus();
+    if (status == null) {
+      throw new DonationServiceException(MessageCode.STATUS_NOT_VALID.name(),
+          MessageCode.STATUS_NOT_VALID.name(),
+          HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  private void checkDonationRequestCreationRequestModel(
+      DonationRequestCreationRequestModel donationRequestCreationRequestModel) {
+    String donorName = donationRequestCreationRequestModel.getDonorName();
+    String address = donationRequestCreationRequestModel.getAddress();
+    String productTitle = donationRequestCreationRequestModel.getProductTitle();
+    int numItems = donationRequestCreationRequestModel.getNumItems();
+    String phoneNo = donationRequestCreationRequestModel.getPhoneNo();
+
+    if (!utils.isNonNullAndNonEmpty(donorName)) {
+      throw new DonationServiceException(MessageCode.DONOR_NAME_NOT_VALID.name(),
+          MessageCode.DONOR_NAME_NOT_VALID.name(),
+          HttpStatus.BAD_REQUEST);
+    }
+
+    if (!utils.isNonNullAndNonEmpty(phoneNo)) {
+      throw new DonationServiceException(MessageCode.PHONE_NO_NOT_VALID.name(),
+          MessageCode.PHONE_NO_NOT_VALID.name(),
+          HttpStatus.BAD_REQUEST);
+    }
+    if (!utils.isNonNullAndNonEmpty(address)) {
+      throw new DonationServiceException(MessageCode.ADDRESS_NOT_VALID.name(),
+          MessageCode.ADDRESS_NOT_VALID.name(),
+          HttpStatus.BAD_REQUEST);
+    }
+    if (!utils.isNonNullAndNonEmpty(productTitle)) {
+      throw new DonationServiceException(MessageCode.PRODUCT_TITLE_NOT_VALID.name(),
+          MessageCode.PRODUCT_TITLE_NOT_VALID.name(),
+          HttpStatus.BAD_REQUEST);
+    }
+    if (numItems <= 0) {
+      throw new DonationServiceException(MessageCode.NUM_ITEMS_NOT_VALID.name(),
+          MessageCode.NUM_ITEMS_NOT_VALID.name(),
+          HttpStatus.BAD_REQUEST);
+    }
+
   }
 }
