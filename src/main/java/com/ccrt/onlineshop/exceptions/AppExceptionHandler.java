@@ -82,6 +82,15 @@ public class AppExceptionHandler {
         HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler(value = { DonationServiceException.class })
+  public ResponseEntity<ResponseMessage> handleDonationServiceException(
+      DonationServiceException exception) {
+    ResponseMessage errorMessage = new ResponseMessage("DONATION_SERVICE: " + exception.getCode(),
+        exception.getMessage());
+    return new ResponseEntity<ResponseMessage>(errorMessage, new HttpHeaders(),
+        HttpStatus.BAD_REQUEST);
+  }
+
   @ExceptionHandler(value = { HttpMessageNotReadableException.class })
   public ResponseEntity<ResponseMessage> handleConstraintViolationException(HttpMessageNotReadableException exception) {
     ResponseMessage errorMessage = new ResponseMessage("BAD_REQUEST", "You must provide valid request body.");

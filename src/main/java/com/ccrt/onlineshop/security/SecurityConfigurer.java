@@ -39,6 +39,8 @@ public class SecurityConfigurer {
         .antMatchers(HttpMethod.PUT, "/categories/{categoryId}/sub-categories/{subCategoryId}")
         .hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, "/promoted-categories").hasAnyAuthority(Role.ADMIN.name())
+        .antMatchers(HttpMethod.POST, "/donation-requests/{requestId}").hasAnyAuthority(Role.ADMIN.name())
+
         .antMatchers(HttpMethod.POST, "/covers").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, "/products").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.PUT, "/products/{productId}").hasAnyAuthority(Role.ADMIN.name())

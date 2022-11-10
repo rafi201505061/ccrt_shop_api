@@ -33,6 +33,10 @@ public class Utils {
     return generateRandomString(15, ALPHABET);
   }
 
+  public String generateDonationRequestId() {
+    return generateRandomString(15, ALPHABET);
+  }
+
   public String generateOrderId() {
     return generateRandomString(15, ALPHABET);
   }
