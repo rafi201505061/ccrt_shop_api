@@ -64,6 +64,7 @@ public class UserServiceImpl implements UserService {
       UserEntity createdUserEntity = userRepository.save(userEntity);
       return modelMapper.map(createdUserEntity, UserDto.class);
     } catch (DataIntegrityViolationException e) {
+      e.printStackTrace();
       throw new UserServiceException("ACCOUNT_ALREADY_EXISTS",
           "You already have an account with this email address. Please sign in.", HttpStatus.BAD_REQUEST);
     } catch (Exception e) {

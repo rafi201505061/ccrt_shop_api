@@ -1,17 +1,14 @@
 package com.ccrt.onlineshop.io.entity;
 
 import java.util.Date;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -29,14 +26,14 @@ public class CampaignEntity {
   private String campaignId;
 
   @Column(nullable = false)
-  @Temporal(TemporalType.TIMESTAMP)
+  @Temporal(TemporalType.DATE)
   private Date startTime;
 
   @Column(nullable = false)
   private long durationInDays;
 
   @Column(nullable = false)
-  @Temporal(TemporalType.TIMESTAMP)
+  @Temporal(TemporalType.DATE)
   private Date endTime;
 
   @Column(nullable = false)
@@ -51,9 +48,6 @@ public class CampaignEntity {
 
   @Column(nullable = false, length = 10000)
   private String description;
-
-  @OneToMany(mappedBy = "campaign", fetch = FetchType.EAGER)
-  private Set<CampaignProductEntity> products;
 
   public long getId() {
     return id;
@@ -109,14 +103,6 @@ public class CampaignEntity {
 
   public void setPriceReductionPercentage(double priceReductionPercentage) {
     this.priceReductionPercentage = priceReductionPercentage;
-  }
-
-  public Set<CampaignProductEntity> getProducts() {
-    return products;
-  }
-
-  public void setProducts(Set<CampaignProductEntity> products) {
-    this.products = products;
   }
 
   public String getTitle() {

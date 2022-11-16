@@ -11,6 +11,7 @@ public class CampaignDto {
   private List<CampaignProductDto> products;
   private String title;
   private String description;
+  private long durationInDays;
 
   public String getCampaignId() {
     return campaignId;
@@ -66,6 +67,14 @@ public class CampaignDto {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public long getDurationInDays() {
+    return durationInDays;
+  }
+
+  public void setDurationInDays(long durationInDays) {
+    this.durationInDays = durationInDays;
   }
 
 }

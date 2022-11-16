@@ -1,5 +1,7 @@
 package com.ccrt.onlineshop.shared.dto;
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 
 public class CategoryDto {
@@ -7,6 +9,7 @@ public class CategoryDto {
   private String title;
   private String imageUrl;
   private MultipartFile image;
+  private List<SubCategoryDto> subCategories;
 
   public String getCategoryId() {
     return categoryId;
@@ -38,5 +41,13 @@ public class CategoryDto {
 
   public void setImage(MultipartFile image) {
     this.image = image;
+  }
+
+  public List<SubCategoryDto> getSubCategories() {
+    return subCategories;
+  }
+
+  public void setSubCategories(List<SubCategoryDto> subCategories) {
+    this.subCategories = subCategories;
   }
 }

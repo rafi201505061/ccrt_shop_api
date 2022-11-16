@@ -10,4 +10,6 @@ import com.ccrt.onlineshop.io.entity.CoverEntity;
 @Repository
 public interface CoverRepository extends CrudRepository<CoverEntity, Long> {
   List<CoverEntity> findAllByOrderByCreationTimeDesc();
+
+  CoverEntity findById(long id);
 }

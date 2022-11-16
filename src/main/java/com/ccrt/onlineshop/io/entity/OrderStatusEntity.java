@@ -19,7 +19,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.ccrt.onlineshop.enums.OrderStatus;
 
 @Entity
-@Table(name = "order_entity")
+@Table(name = "order_status")
 public class OrderStatusEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

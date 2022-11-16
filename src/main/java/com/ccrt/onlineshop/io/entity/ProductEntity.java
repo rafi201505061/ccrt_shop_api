@@ -66,7 +66,7 @@ public class ProductEntity {
   @JoinColumn(nullable = false)
   private UserEntity uploader;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(nullable = false)
   private SubCategoryEntity subCategory;
 

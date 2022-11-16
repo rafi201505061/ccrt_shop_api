@@ -29,8 +29,13 @@ public enum Message {
   IMAGE_NOT_VALID("You must provide a valid image."),
   SUB_CATEGORY_NOT_FOUND("Sub category couldn't be found."),
   PRODUCT_NOT_FOUND("Product couldn't be found."),
+  DATE_NOT_VALID("You must provide a valid date."),
+  DURATION_NOT_VALID("Duration must be a positive number."),
+  PRICE_REDUCTION_PERCENTAGE_NOT_VALID("Price reduction percentage must be between 0 to 100"),
   INVALID_TYPE("You must provide a valid type"),
   ADDRESS_NOT_FOUND("Address couldn't be found."),
+  CAMPAIGN_NOT_FOUND("Campaign couldn't be found"),
+  COVER_NOT_FOUND("Cover couldn't be found."),
   USER_OTP_SERVICE_BLOCKED(
       "Too many requests within a short amount of time. User is blocked temporarily. Please try again later."),
   USER_NOT_FOUND("USER_NOT_FOUND");

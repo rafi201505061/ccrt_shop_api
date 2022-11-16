@@ -70,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
       String imageName = productId + "." + utils.getFileExtension(productDto.getImage().getOriginalFilename());
       fileUploadUtil.saveFile(FileUploadUtil.PRODUCT_UPLOAD_DIR, imageName, productDto.getImage());
       productEntity.setProductId(productId);
-      productEntity.setImageUrl(FileUploadUtil.PRODUCT_UPLOAD_DIR + "\\" + imageName);
+      productEntity.setImageUrl("/products/" + imageName);
       ProductEntity createdProductEntity = productRepository.save(productEntity);
       return modelMapper.map(createdProductEntity, ProductDto.class);
     } catch (IOException e) {

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,6 +79,17 @@ public class CoverServiceImpl implements CoverService {
       coverDtos.add(modelMapper.map(coverEntity, CoverDto.class));
     }
     return coverDtos;
+  }
+
+  @Override
+  public void removeCover(long coverId) {
+    CoverEntity coverEntity = coverRepository.findById(coverId);
+    if (coverEntity == null) {
+      throw new CoverServiceException(MessageCode.COVER_NOT_FOUND.name(), Message.COVER_NOT_FOUND.getMessage(),
+          HttpStatus.NOT_FOUND);
+    }
+    coverRepository.delete(coverEntity);
+
   }
 
 }

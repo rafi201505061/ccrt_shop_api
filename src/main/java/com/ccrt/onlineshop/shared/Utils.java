@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 import java.util.StringTokenizer;
@@ -29,7 +30,25 @@ public class Utils {
     return generateRandomString(length, DIGITS);
   }
 
+  public Date addDays(Date date, int days) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(date);
+    cal.add(Calendar.DATE, days); // minus number would decrement the days
+    return cal.getTime();
+  }
+
+  public Date addHours(Date date, int hours) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(date);
+    cal.add(Calendar.HOUR, hours); // minus number would decrement the days
+    return cal.getTime();
+  }
+
   public String generateImageId() {
+    return generateRandomString(15, ALPHABET);
+  }
+
+  public String generateCampaignId() {
     return generateRandomString(15, ALPHABET);
   }
 

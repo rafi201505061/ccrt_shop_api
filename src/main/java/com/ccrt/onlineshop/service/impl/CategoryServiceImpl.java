@@ -3,6 +3,7 @@ package com.ccrt.onlineshop.service.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.transaction.Transactional;
 
@@ -15,6 +16,7 @@ import com.ccrt.onlineshop.enums.Message;
 import com.ccrt.onlineshop.enums.MessageCode;
 import com.ccrt.onlineshop.exceptions.CategoryServiceException;
 import com.ccrt.onlineshop.io.entity.CategoryEntity;
+import com.ccrt.onlineshop.io.entity.CategoryList;
 import com.ccrt.onlineshop.io.entity.PromotedCategoryEntity;
 import com.ccrt.onlineshop.io.entity.SubCategoryEntity;
 import com.ccrt.onlineshop.io.repository.CategoryRepository;
@@ -57,7 +59,7 @@ public class CategoryServiceImpl implements CategoryService {
       categoryEntity.setCategoryId(categoryId);
       String fileName = categoryId + "." + utils.getFileExtension(categoryDto.getImage().getOriginalFilename());
       fileUploadUtil.saveFile(FileUploadUtil.CATEGORY_UPLOAD_DIR, fileName, categoryDto.getImage());
-      categoryEntity.setImageUrl(FileUploadUtil.CATEGORY_UPLOAD_DIR + "\\" + fileName);
+      categoryEntity.setImageUrl("/categories/" + fileName);
       CategoryEntity createdCategoryEntity = categoryRepository.save(categoryEntity);
       return modelMapper.map(createdCategoryEntity, CategoryDto.class);
     } catch (IOException e) {
@@ -93,8 +95,8 @@ public class CategoryServiceImpl implements CategoryService {
       subCategoryEntity.setSubCategoryId(subCategoryId);
       subCategoryEntity.setCategory(categoryEntity);
       String fileName = subCategoryId + "." + utils.getFileExtension(subCategoryDto.getImage().getOriginalFilename());
-      fileUploadUtil.saveFile(FileUploadUtil.CATEGORY_UPLOAD_DIR, fileName, subCategoryDto.getImage());
-      subCategoryEntity.setImageUrl(FileUploadUtil.CATEGORY_UPLOAD_DIR + "\\" + fileName);
+      fileUploadUtil.saveFile(FileUploadUtil.SUB_CATEGORY_UPLOAD_DIR, fileName, subCategoryDto.getImage());
+      subCategoryEntity.setImageUrl("/sub-categories/" + fileName);
       SubCategoryEntity createdSubCategoryEntity = subCategoryRepository.save(subCategoryEntity);
       return modelMapper.map(createdSubCategoryEntity, SubCategoryDto.class);
     } catch (IOException e) {
@@ -209,6 +211,39 @@ public class CategoryServiceImpl implements CategoryService {
           Message.SUB_CATEGORY_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
     }
     return modelMapper.map(subCategoryEntity, SubCategoryDto.class);
+  }
+
+  @Override
+  public List<CategoryDto> retrieveCategoryList() {
+    List<CategoryList> categoryList = subCategoryRepository.findCategoryListWithSubcategoryList();
+    List<CategoryDto> categoryDtos = new ArrayList<>();
+    for (CategoryList category : categoryList) {
+      String categoryId = category.getCategoryId();
+      String categoryTitle = category.getCategoryTitle();
+      String categoryImageUrl = category.getCategoryImageUrl();
+      String subCategoryIds = category.getSubCategoryIds();
+      String subCategoryTitles = category.getSubCategoryTitles();
+      String subCategoryImageUrls = category.getSubCategoryImageUrls();
+      CategoryDto categoryDto = new CategoryDto();
+      categoryDto.setCategoryId(categoryId);
+      categoryDto.setTitle(categoryTitle);
+      categoryDto.setImageUrl(categoryImageUrl);
+      StringTokenizer ids = new StringTokenizer(subCategoryIds, ",");
+      StringTokenizer titles = new StringTokenizer(subCategoryTitles, ",");
+      StringTokenizer imageUrls = new StringTokenizer(subCategoryImageUrls, ",");
+      List<SubCategoryDto> subCategories = new ArrayList<>();
+      while (ids.hasMoreTokens()) {
+        SubCategoryDto subCategoryDto = new SubCategoryDto();
+        subCategoryDto.setSubCategoryId(ids.nextToken());
+        subCategoryDto.setTitle(titles.nextToken());
+        subCategoryDto.setImageUrl(imageUrls.nextToken());
+        subCategories.add(subCategoryDto);
+
+      }
+      categoryDto.setSubCategories(subCategories);
+      categoryDtos.add(categoryDto);
+    }
+    return categoryDtos;
   }
 
 }

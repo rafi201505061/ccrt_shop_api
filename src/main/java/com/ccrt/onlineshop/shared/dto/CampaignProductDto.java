@@ -2,6 +2,7 @@ package com.ccrt.onlineshop.shared.dto;
 
 public class CampaignProductDto {
   private ProductDto product;
+  private String productId;
   private double priceReductionPercentage;
 
   public ProductDto getProduct() {
@@ -18,5 +19,13 @@ public class CampaignProductDto {
 
   public void setPriceReductionPercentage(double priceReductionPercentage) {
     this.priceReductionPercentage = priceReductionPercentage;
+  }
+
+  public String getProductId() {
+    return productId;
+  }
+
+  public void setProductId(String productId) {
+    this.productId = productId;
   }
 }

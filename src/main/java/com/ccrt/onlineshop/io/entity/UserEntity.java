@@ -11,7 +11,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -50,11 +49,9 @@ public class UserEntity {
   private Set<ProductEntity> products = new HashSet<>();
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(nullable = false)
   private AddressEntity defaultShippingAddress;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(nullable = false)
   private AddressEntity defaultBillingAddress;
 
   public long getId() {

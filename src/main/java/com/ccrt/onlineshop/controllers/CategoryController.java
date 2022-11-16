@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ccrt.onlineshop.enums.Message;
 import com.ccrt.onlineshop.enums.MessageCode;
+import com.ccrt.onlineshop.enums.ReturnType;
 import com.ccrt.onlineshop.exceptions.CategoryServiceException;
 import com.ccrt.onlineshop.model.request.CategoryCreationRequestModel;
 import com.ccrt.onlineshop.model.request.SubCategoryCreationRequestModel;
@@ -49,8 +51,14 @@ public class CategoryController {
   }
 
   @GetMapping
-  public List<CategoryRest> retrieveCategories() {
-    List<CategoryDto> categoryDtos = categoryService.retrieveAllCategories();
+  public List<CategoryRest> retrieveCategories(
+      @RequestParam(value = "returnType", required = false, defaultValue = "LIST_WITH_SUB_CATEGORY_LIST") ReturnType returnType) {
+
+    List<CategoryDto> categoryDtos;
+    if (returnType == ReturnType.LIST_WITH_SUB_CATEGORY_LIST)
+      categoryDtos = categoryService.retrieveCategoryList();
+    else
+      categoryDtos = categoryService.retrieveAllCategories();
     List<CategoryRest> categoryRests = new ArrayList<>();
     for (CategoryDto categoryDto : categoryDtos) {
       categoryRests.add(modelMapper.map(categoryDto, CategoryRest.class));
@@ -70,7 +78,7 @@ public class CategoryController {
   }
 
   @PostMapping(value = "/{categoryId}/sub-categories", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public SubCategoryRest addSubCategory(@RequestPart(name = "image", required = false) MultipartFile image,
+  public SubCategoryRest addSubCategory(@RequestPart(name = "image", required = true) MultipartFile image,
       @ModelAttribute SubCategoryCreationRequestModel subCategoryCreationRequestModel,
       @PathVariable String categoryId) {
     checkSubCategoryCreationRequestModel(subCategoryCreationRequestModel, image);

@@ -15,6 +15,7 @@ public class ProductDto {
   private long totalEntities;
   private long remainingEntities;
   private String subCategoryId;
+  private SubCategoryDto subCategory;
   private UsageStatus usageStatus;
   private String uploaderUserId;
   private double averageRating;
@@ -139,6 +140,14 @@ public class ProductDto {
 
   public void setRaterUserId(String raterUserId) {
     this.raterUserId = raterUserId;
+  }
+
+  public SubCategoryDto getSubCategory() {
+    return subCategory;
+  }
+
+  public void setSubCategory(SubCategoryDto subCategory) {
+    this.subCategory = subCategory;
   }
 
 }

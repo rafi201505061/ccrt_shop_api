@@ -8,4 +8,6 @@ public interface CoverService {
   CoverDto createCover(CoverDto coverDto);
 
   List<CoverDto> retrieveCovers();
+
+  void removeCover(long coverId);
 }

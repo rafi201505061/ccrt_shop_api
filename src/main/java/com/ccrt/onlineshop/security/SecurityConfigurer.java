@@ -41,8 +41,14 @@ public class SecurityConfigurer {
         .antMatchers(HttpMethod.POST, "/promoted-categories").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.PUT, "/donation-requests/{requestId}").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.GET, "/donation-requests").hasAnyAuthority(Role.ADMIN.name())
-
+        .antMatchers(HttpMethod.DELETE, "/campaigns/{campaignId}/products/{productId}")
+        .hasAnyAuthority(Role.ADMIN.name())
+        .antMatchers(HttpMethod.POST, "/campaigns/{campaignId}/products")
+        .hasAnyAuthority(Role.ADMIN.name())
+        .antMatchers(HttpMethod.POST, "/campaigns")
+        .hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, "/covers").hasAnyAuthority(Role.ADMIN.name())
+        .antMatchers(HttpMethod.DELETE, "/covers/{coverId}").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, "/products").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.PUT, "/products/{productId}").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.PUT, "/products/{productId}/image").hasAnyAuthority(Role.ADMIN.name())
@@ -58,10 +64,14 @@ public class SecurityConfigurer {
         .antMatchers(HttpMethod.GET, "/categories/{categoryId}/sub-categories").permitAll()
         .antMatchers(HttpMethod.GET, "/promoted-categories").permitAll()
         .antMatchers(HttpMethod.GET, "/covers").permitAll()
+
         .antMatchers(HttpMethod.GET, "/products").permitAll()
-        .antMatchers(HttpMethod.GET, "/product-search").permitAll()
+        .antMatchers(HttpMethod.GET, "/misc/product-search").permitAll()
         .antMatchers(HttpMethod.GET, "/products/{productId}").permitAll()
         .antMatchers(HttpMethod.POST, "/donation-requests").permitAll()
+        .antMatchers(HttpMethod.GET, "/campaigns").permitAll()
+
+        .antMatchers(HttpMethod.GET, "/campaigns/{campaignId}/products").permitAll()
 
         .anyRequest()
         .authenticated().and()
@@ -93,4 +103,5 @@ public class SecurityConfigurer {
     urlBasedCorsConfigurationSource.setCorsConfigurations(mapping);
     return urlBasedCorsConfigurationSource;
   }
+
 }

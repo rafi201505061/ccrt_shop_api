@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,7 +19,7 @@ import com.ccrt.onlineshop.service.ProductService;
 import com.ccrt.onlineshop.shared.dto.ProductDto;
 
 @RestController
-@RequestMapping("product-search")
+@RequestMapping("misc")
 public class MiscController {
 
   @Autowired
@@ -26,7 +28,7 @@ public class MiscController {
   @Autowired
   private ModelMapper modelMapper;
 
-  @GetMapping
+  @GetMapping("/product-search")
   public List<ProductRest> searchProducts(@RequestParam(name = "page", defaultValue = "0", required = false) int page,
       @RequestParam(name = "limit", defaultValue = "15", required = false) int limit,
       @RequestParam(name = "keyword", defaultValue = "", required = true) String keyword,
@@ -42,5 +44,10 @@ public class MiscController {
       productRests.add(modelMapper.map(productDto, ProductRest.class));
     }
     return productRests;
+  }
+
+  @GetMapping("/token-checker")
+  public ResponseEntity<String> checkToken() {
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 }

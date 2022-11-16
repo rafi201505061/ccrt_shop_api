@@ -12,6 +12,7 @@ public class ProductRest {
   private long totalEntities;
   private long remainingEntities;
   private UsageStatus usageStatus;
+  private SubCategoryRest subCategory;
   private double averageRating;
 
   public String getProductId() {
@@ -92,5 +93,13 @@ public class ProductRest {
 
   public void setAverageRating(double averageRating) {
     this.averageRating = averageRating;
+  }
+
+  public SubCategoryRest getSubCategory() {
+    return subCategory;
+  }
+
+  public void setSubCategory(SubCategoryRest subCategory) {
+    this.subCategory = subCategory;
   }
 }
