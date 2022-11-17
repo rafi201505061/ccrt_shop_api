@@ -21,6 +21,7 @@ import com.ccrt.onlineshop.enums.SortValue;
 import com.ccrt.onlineshop.exceptions.ProductServiceException;
 import com.ccrt.onlineshop.io.entity.ProductEntity;
 import com.ccrt.onlineshop.io.entity.RatingEntity;
+import com.ccrt.onlineshop.io.entity.SubCategoryEntity;
 import com.ccrt.onlineshop.io.entity.UserEntity;
 import com.ccrt.onlineshop.io.repository.ProductRepository;
 import com.ccrt.onlineshop.io.repository.RatingRepository;
@@ -82,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public List<ProductDto> retrieveProducts(int page, int limit, SortValue sortBy, SortType sortType,
       String subCategoryId, double startPrice, double endPrice) {
-    Sort sort = getSort(sortBy, sortType);
+    Sort sort = getSort(sortBy, sortType, false);
     Page<ProductEntity> productEntityPage;
     if (subCategoryId != null && !subCategoryId.isEmpty()) {
       productEntityPage = productRepository.findAllBySubCategory_SubCategoryId(subCategoryId, startPrice, endPrice,
@@ -114,9 +115,14 @@ public class ProductServiceImpl implements ProductService {
   public List<ProductDto> searchProducts(int page, int limit, String keyword, double startPrice, double endPrice,
       String subCategoryId, SortValue sortBy, SortType sortType) {
     Page<ProductEntity> productPage;
-    Sort sort = getSort(sortBy, sortType);
+    Sort sort = getSort(sortBy, sortType, true);
     if (!subCategoryId.equals("all")) {
-      productPage = productRepository.searchByTitleAndCategory(keyword, startPrice, endPrice, subCategoryId,
+      SubCategoryEntity subCategoryEntity = subCategoryRepository.findBySubCategoryId(subCategoryId);
+      long id = 0;
+      if (subCategoryEntity != null) {
+        id = subCategoryEntity.getId();
+      }
+      productPage = productRepository.searchByTitleAndCategory(keyword, startPrice, endPrice, id,
           PageRequest.of(page, limit, sort));
     } else {
       productPage = productRepository.searchByTitle(keyword, startPrice, endPrice,
@@ -130,7 +136,7 @@ public class ProductServiceImpl implements ProductService {
     return productDtos;
   }
 
-  private Sort getSort(SortValue sortBy, SortType sortType) {
+  private Sort getSort(SortValue sortBy, SortType sortType, boolean search) {
     Sort sort = Sort.by("price").ascending();
     if (sortBy == SortValue.PRICE) {
       if (sortType == SortType.ASC) {
@@ -139,10 +145,11 @@ public class ProductServiceImpl implements ProductService {
         sort = Sort.by("price").descending();
       }
     } else if (sortBy == SortValue.CREATION_TIME) {
+
       if (sortType == SortType.ASC) {
-        sort = Sort.by("creationTime").ascending();
+        sort = Sort.by(search ? "creation_time" : "creationTime").ascending();
       } else if (sortType == SortType.DESC) {
-        sort = Sort.by("creationTime").descending();
+        sort = Sort.by(search ? "creation_time" : "creationTime").descending();
       }
     }
     return sort;
