@@ -10,7 +10,7 @@ public class AddressRest {
   private String province;
   private String city;
   private String village;
-  private String address;
+  private String details;
   private String landmark;
   private AddressType addressType;
   private DefaultAddressStatus defaultAddressStatus;
@@ -63,14 +63,6 @@ public class AddressRest {
     this.village = village;
   }
 
-  public String getAddress() {
-    return address;
-  }
-
-  public void setAddress(String address) {
-    this.address = address;
-  }
-
   public String getLandmark() {
     return landmark;
   }
@@ -93,5 +85,13 @@ public class AddressRest {
 
   public void setDefaultAddressStatus(DefaultAddressStatus defaultAddressStatus) {
     this.defaultAddressStatus = defaultAddressStatus;
+  }
+
+  public String getDetails() {
+    return details;
+  }
+
+  public void setDetails(String details) {
+    this.details = details;
   }
 }

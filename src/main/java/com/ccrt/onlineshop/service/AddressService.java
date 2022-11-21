@@ -12,4 +12,6 @@ public interface AddressService {
   AddressDto retrieveAddress(String addressId);
 
   AddressDto updateDefaultAddresses(String userId, AddressDto addressDto);
+
+  void removeAddress(String addressId, String userId);
 }

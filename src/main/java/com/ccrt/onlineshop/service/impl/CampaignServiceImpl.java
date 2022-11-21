@@ -100,7 +100,10 @@ public class CampaignServiceImpl implements CampaignService {
     CampaignProductEntity campaignProductEntity = new CampaignProductEntity();
     campaignProductEntity.setCampaign(campaignEntity);
     campaignProductEntity.setProduct(productEntity);
-    campaignProductEntity.setPriceReductionPercentage(campaignProductDto.getPriceReductionPercentage());
+    if (campaignProductDto.getPriceReductionPercentage() > 0)
+      campaignProductEntity.setPriceReductionPercentage(campaignProductDto.getPriceReductionPercentage());
+    else
+      campaignProductEntity.setPriceReductionPercentage(campaignEntity.getPriceReductionPercentage());
     CampaignProductEntity createdCampaignProductEntity = campaignProductRepository.save(campaignProductEntity);
     return modelMapper.map(createdCampaignProductEntity, CampaignProductDto.class);
   }

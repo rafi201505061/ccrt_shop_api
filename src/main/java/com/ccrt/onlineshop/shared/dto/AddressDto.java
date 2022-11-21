@@ -10,7 +10,7 @@ public class AddressDto {
   private String province;
   private String city;
   private String village;
-  private String address;
+  private String details;
   private String landmark;
   private AddressType addressType;
   private DefaultAddressStatus defaultAddressStatus;
@@ -63,14 +63,6 @@ public class AddressDto {
     this.village = village;
   }
 
-  public String getAddress() {
-    return address;
-  }
-
-  public void setAddress(String address) {
-    this.address = address;
-  }
-
   public String getLandmark() {
     return landmark;
   }
@@ -93,5 +85,20 @@ public class AddressDto {
 
   public void setDefaultAddressStatus(DefaultAddressStatus defaultAddressStatus) {
     this.defaultAddressStatus = defaultAddressStatus;
+  }
+
+  public String getDetails() {
+    return details;
+  }
+
+  public void setDetails(String details) {
+    this.details = details;
+  }
+
+  @Override
+  public String toString() {
+    return "AddressDto [addressId=" + addressId + ", fullName=" + fullName + ", phoneNo=" + phoneNo + ", province="
+        + province + ", city=" + city + ", village=" + village + ", details=" + details + ", landmark=" + landmark
+        + ", addressType=" + addressType + ", defaultAddressStatus=" + defaultAddressStatus + "]";
   }
 }

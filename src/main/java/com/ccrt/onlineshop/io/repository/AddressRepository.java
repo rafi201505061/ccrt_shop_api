@@ -9,7 +9,7 @@ import com.ccrt.onlineshop.io.entity.AddressEntity;
 
 @Repository
 public interface AddressRepository extends PagingAndSortingRepository<AddressEntity, Long> {
-  Page<AddressEntity> findAllByUser_UserId(String userId, Pageable pageable);
+  Page<AddressEntity> findAllByUser_UserIdAndIsValid(String userId, boolean isValid, Pageable pageable);
 
-  AddressEntity findByAddressId(String addressId);
+  AddressEntity findByAddressIdAndIsValid(String addressId, boolean isValid);
 }

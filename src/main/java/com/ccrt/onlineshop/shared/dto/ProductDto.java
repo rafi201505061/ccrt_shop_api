@@ -10,6 +10,7 @@ public class ProductDto {
   private String description;
   private double prevPrice;
   private double price;
+  private long totalRater;
   private MultipartFile image;
   private String imageUrl;
   private long totalEntities;
@@ -148,6 +149,14 @@ public class ProductDto {
 
   public void setSubCategory(SubCategoryDto subCategory) {
     this.subCategory = subCategory;
+  }
+
+  public long getTotalRater() {
+    return totalRater;
+  }
+
+  public void setTotalRater(long totalRater) {
+    this.totalRater = totalRater;
   }
 
 }

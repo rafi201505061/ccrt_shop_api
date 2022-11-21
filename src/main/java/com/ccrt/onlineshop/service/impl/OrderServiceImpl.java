@@ -75,12 +75,14 @@ public class OrderServiceImpl implements OrderService {
     if (userEntity == null)
       throw new OrderServiceException(MessageCode.USER_NOT_FOUND.name(), Message.USER_NOT_FOUND.getMessage(),
           HttpStatus.NOT_FOUND);
-    AddressEntity billingAddressEntity = addressRepository.findByAddressId(orderDto.getBillingAddressId());
+    AddressEntity billingAddressEntity = addressRepository.findByAddressIdAndIsValid(orderDto.getBillingAddressId(),
+        true);
     if (billingAddressEntity == null)
       throw new OrderServiceException(MessageCode.ADDRESS_NOT_FOUND.name(), Message.ADDRESS_NOT_FOUND.getMessage(),
           HttpStatus.NOT_FOUND);
 
-    AddressEntity shippingAddressEntity = addressRepository.findByAddressId(orderDto.getShippingAddressId());
+    AddressEntity shippingAddressEntity = addressRepository.findByAddressIdAndIsValid(orderDto.getShippingAddressId(),
+        true);
     if (shippingAddressEntity == null)
       throw new OrderServiceException(MessageCode.ADDRESS_NOT_FOUND.name(), Message.ADDRESS_NOT_FOUND.getMessage(),
           HttpStatus.NOT_FOUND);
@@ -160,6 +162,7 @@ public class OrderServiceImpl implements OrderService {
 
     Page<OrderEntity> orderEntities;
     if (orderStatus == OrderStatus.ALL) {
+
       orderEntities = orderRepository.findAll(
           PageRequest.of(page, limit, Sort.by("creationTime").descending()));
     } else {

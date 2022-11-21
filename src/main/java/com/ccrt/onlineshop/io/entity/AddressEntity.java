@@ -49,7 +49,10 @@ public class AddressEntity {
   @Column(nullable = false)
   private boolean isValid = true;
 
-  private String address;
+  @Column(length = 1000)
+  private String details;
+
+  @Column(length = 1000)
   private String landmark;
 
   @Column(nullable = false)
@@ -120,14 +123,6 @@ public class AddressEntity {
     this.village = village;
   }
 
-  public String getAddress() {
-    return address;
-  }
-
-  public void setAddress(String address) {
-    this.address = address;
-  }
-
   public String getLandmark() {
     return landmark;
   }
@@ -166,5 +161,21 @@ public class AddressEntity {
 
   public void setUser(UserEntity user) {
     this.user = user;
+  }
+
+  public String getDetails() {
+    return details;
+  }
+
+  public void setDetails(String details) {
+    this.details = details;
+  }
+
+  @Override
+  public String toString() {
+    return "AddressEntity [id=" + id + ", addressId=" + addressId + ", fullName=" + fullName + ", phoneNo=" + phoneNo
+        + ", province=" + province + ", city=" + city + ", village=" + village + ", isValid=" + isValid + ", details="
+        + details + ", landmark=" + landmark + ", addressType=" + addressType + ", creationTime=" + creationTime
+        + ", user=" + user + "]";
   }
 }

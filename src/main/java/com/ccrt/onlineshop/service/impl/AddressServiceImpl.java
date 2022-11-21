@@ -64,24 +64,52 @@ public class AddressServiceImpl implements AddressService {
         userRepository.save(userEntity);
       }
     }
-    return modelMapper.map(createdAddressEntity, AddressDto.class);
+    AddressDto returnVal = modelMapper.map(createdAddressEntity, AddressDto.class);
+    returnVal.setDefaultAddressStatus(addressDto.getDefaultAddressStatus());
+    return returnVal;
   }
 
+  @Transactional
   @Override
   public List<AddressDto> retrieveAllAddresses(String userId, int page, int limit) {
-    Page<AddressEntity> addressPage = addressRepository.findAllByUser_UserId(userId,
+    UserEntity userEntity = userRepository.findByUserId(userId);
+    if (userEntity == null) {
+      throw new AddressServiceException(MessageCode.USER_NOT_FOUND.name(), Message.USER_NOT_FOUND.getMessage(),
+          HttpStatus.NOT_FOUND);
+    }
+    AddressEntity defaultBillingAddress = userEntity.getDefaultBillingAddress();
+    AddressEntity defaultShippingAddress = userEntity.getDefaultShippingAddress();
+
+    Page<AddressEntity> addressPage = addressRepository.findAllByUser_UserIdAndIsValid(userId, true,
         PageRequest.of(page, limit, Sort.by("creationTime").descending()));
     List<AddressEntity> addressEntities = addressPage.getContent();
     List<AddressDto> addressDtos = new ArrayList<>();
     for (AddressEntity addressEntity : addressEntities) {
-      addressDtos.add(modelMapper.map(addressEntity, AddressDto.class));
+      System.out.println(addressEntity);
+      AddressDto addressDto = modelMapper.map(addressEntity, AddressDto.class);
+      System.out.println(addressDto);
+
+      DefaultAddressStatus defaultAddressStatus = DefaultAddressStatus.NONE;
+      if (defaultBillingAddress != null && defaultShippingAddress != null
+          && addressDto.getAddressId().equals(defaultBillingAddress.getAddressId())
+          && addressDto.getAddressId().equals(defaultShippingAddress.getAddressId())) {
+        defaultAddressStatus = DefaultAddressStatus.BOTH;
+      } else if (defaultBillingAddress != null
+          && addressDto.getAddressId().equals(defaultBillingAddress.getAddressId())) {
+        defaultAddressStatus = DefaultAddressStatus.DEFAULT_BILLING_ADDRESS;
+      } else if (defaultShippingAddress != null
+          && addressDto.getAddressId().equals(defaultShippingAddress.getAddressId())) {
+        defaultAddressStatus = DefaultAddressStatus.DEFAULT_SHIPPING_ADDRESS;
+      }
+      addressDto.setDefaultAddressStatus(defaultAddressStatus);
+      addressDtos.add(addressDto);
     }
     return addressDtos;
   }
 
   @Override
   public AddressDto retrieveAddress(String addressId) {
-    AddressEntity addressEntity = addressRepository.findByAddressId(addressId);
+    AddressEntity addressEntity = addressRepository.findByAddressIdAndIsValid(addressId, true);
     if (addressEntity == null) {
       throw new AddressServiceException(MessageCode.ADDRESS_NOT_FOUND.name(), Message.ADDRESS_NOT_FOUND.getMessage(),
           HttpStatus.NOT_FOUND);
@@ -93,7 +121,7 @@ public class AddressServiceImpl implements AddressService {
   @Transactional
   @Override
   public AddressDto updateDefaultAddresses(String userId, AddressDto addressDto) {
-    AddressEntity addressEntity = addressRepository.findByAddressId(addressDto.getAddressId());
+    AddressEntity addressEntity = addressRepository.findByAddressIdAndIsValid(addressDto.getAddressId(), true);
     if (addressEntity == null) {
       throw new AddressServiceException(MessageCode.ADDRESS_NOT_FOUND.name(), Message.ADDRESS_NOT_FOUND.getMessage(),
           HttpStatus.NOT_FOUND);
@@ -109,14 +137,51 @@ public class AddressServiceImpl implements AddressService {
         if (addressDto.getDefaultAddressStatus() == DefaultAddressStatus.DEFAULT_BILLING_ADDRESS) {
           userEntity.setDefaultBillingAddress(addressEntity);
           userRepository.save(userEntity);
-        }
-        if (addressDto.getDefaultAddressStatus() == DefaultAddressStatus.DEFAULT_SHIPPING_ADDRESS) {
+        } else if (addressDto.getDefaultAddressStatus() == DefaultAddressStatus.DEFAULT_SHIPPING_ADDRESS) {
           userEntity.setDefaultShippingAddress(addressEntity);
+          userRepository.save(userEntity);
+        } else if (addressDto.getDefaultAddressStatus() == DefaultAddressStatus.BOTH) {
+          userEntity.setDefaultShippingAddress(addressEntity);
+          userEntity.setDefaultBillingAddress(addressEntity);
           userRepository.save(userEntity);
         }
       }
+    } else {
+      throw new AddressServiceException(MessageCode.FORBIDDEN.name(), Message.FORBIDDEN.getMessage(),
+          HttpStatus.NOT_FOUND);
     }
-    return modelMapper.map(addressEntity, AddressDto.class);
+    AddressDto returnVal = modelMapper.map(addressEntity, AddressDto.class);
+    returnVal.setDefaultAddressStatus(addressDto.getDefaultAddressStatus());
+    return returnVal;
+  }
+
+  @Transactional
+  @Override
+  public void removeAddress(String addressId, String userId) {
+    AddressEntity addressEntity = addressRepository.findByAddressIdAndIsValid(addressId, true);
+    if (addressEntity == null) {
+      throw new AddressServiceException(MessageCode.ADDRESS_NOT_FOUND.name(), Message.ADDRESS_NOT_FOUND.getMessage(),
+          HttpStatus.NOT_FOUND);
+    }
+    UserEntity user = addressEntity.getUser();
+    if (user.getUserId().equals(userId)) {
+      AddressEntity defaultBillingAddress = user.getDefaultBillingAddress();
+      if (defaultBillingAddress != null && defaultBillingAddress.getAddressId().equals(addressId)) {
+        user.setDefaultBillingAddress(null);
+      }
+      AddressEntity defaultShippingAddress = user.getDefaultShippingAddress();
+
+      if (defaultShippingAddress != null && defaultShippingAddress.getAddressId().equals(addressId)) {
+        user.setDefaultShippingAddress(null);
+      }
+      addressEntity.setValid(false);
+      addressRepository.save(addressEntity);
+      userRepository.save(user);
+    } else {
+      throw new AddressServiceException(MessageCode.FORBIDDEN.name(), Message.FORBIDDEN.getMessage(),
+          HttpStatus.NOT_FOUND);
+    }
+
   }
 
 }

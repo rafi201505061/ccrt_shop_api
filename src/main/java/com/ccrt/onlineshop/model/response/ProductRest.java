@@ -14,6 +14,7 @@ public class ProductRest {
   private UsageStatus usageStatus;
   private SubCategoryRest subCategory;
   private double averageRating;
+  private long totalRater;
 
   public String getProductId() {
     return productId;
@@ -101,5 +102,13 @@ public class ProductRest {
 
   public void setSubCategory(SubCategoryRest subCategory) {
     this.subCategory = subCategory;
+  }
+
+  public long getTotalRater() {
+    return totalRater;
+  }
+
+  public void setTotalRater(long totalRater) {
+    this.totalRater = totalRater;
   }
 }

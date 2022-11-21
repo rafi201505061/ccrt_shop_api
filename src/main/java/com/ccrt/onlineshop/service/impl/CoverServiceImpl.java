@@ -15,8 +15,10 @@ import com.ccrt.onlineshop.enums.Message;
 import com.ccrt.onlineshop.enums.MessageCode;
 import com.ccrt.onlineshop.exceptions.CoverServiceException;
 import com.ccrt.onlineshop.io.entity.CoverEntity;
+import com.ccrt.onlineshop.io.entity.ProductEntity;
 import com.ccrt.onlineshop.io.entity.SubCategoryEntity;
 import com.ccrt.onlineshop.io.repository.CoverRepository;
+import com.ccrt.onlineshop.io.repository.ProductRepository;
 import com.ccrt.onlineshop.io.repository.SubCategoryRepository;
 import com.ccrt.onlineshop.service.CoverService;
 import com.ccrt.onlineshop.shared.FileUploadUtil;
@@ -33,7 +35,8 @@ public class CoverServiceImpl implements CoverService {
 
   @Autowired
   private SubCategoryRepository subCategoryRepository;
-
+  @Autowired
+  private ProductRepository productRepository;
   @Autowired
   private FileUploadUtil fileUploadUtil;
 
@@ -50,7 +53,7 @@ public class CoverServiceImpl implements CoverService {
         String imageName = utils.generateImageId() + "."
             + utils.getFileExtension(coverDto.getImage().getOriginalFilename());
         fileUploadUtil.saveFile(FileUploadUtil.COVER_UPLOAD_DIR, imageName, coverDto.getImage());
-        coverEntity.setImageUrl(FileUploadUtil.COVER_UPLOAD_DIR + "\\" + imageName);
+        coverEntity.setImageUrl("/covers/" + imageName);
       } else {
         if (coverDto.getType() == CoverType.CATEGORY) {
           SubCategoryEntity subCategoryEntity = subCategoryRepository.findBySubCategoryId(coverDto.getItemId());
@@ -60,7 +63,12 @@ public class CoverServiceImpl implements CoverService {
           }
           coverEntity.setImageUrl(subCategoryEntity.getImageUrl());
         } else if (coverDto.getType() == CoverType.PRODUCT) {
-          coverEntity.setImageUrl("dummy");
+          ProductEntity productEntity = productRepository.findByProductId(coverDto.getItemId());
+          if (productEntity == null) {
+            throw new CoverServiceException(MessageCode.PRODUCT_NOT_FOUND.name(),
+                Message.PRODUCT_NOT_FOUND.getMessage());
+          }
+          coverEntity.setImageUrl(productEntity.getImageUrl());
         }
       }
       CoverEntity createdCoverEntity = coverRepository.save(coverEntity);
