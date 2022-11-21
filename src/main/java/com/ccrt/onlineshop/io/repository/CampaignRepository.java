@@ -14,7 +14,10 @@ import com.ccrt.onlineshop.io.entity.CampaignEntity;
 @Repository
 public interface CampaignRepository extends PagingAndSortingRepository<CampaignEntity, Long> {
   @Query("select e from CampaignEntity e where e.startTime<=:date and e.endTime>=:date")
-  Page<CampaignEntity> findValidCampaigns(@Param("date") Date date, Pageable pageable);
+  Page<CampaignEntity> findRunningCampaigns(@Param("date") Date date, Pageable pageable);
+
+  @Query("select e from CampaignEntity e where (e.startTime<=:date and e.endTime>=:date) OR e.startTime>:date")
+  Page<CampaignEntity> findRunningAndFutureCampaigns(@Param("date") Date date, Pageable pageable);
 
   CampaignEntity findByCampaignId(String campaignId);
 }

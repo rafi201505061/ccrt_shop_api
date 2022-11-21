@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.ccrt.onlineshop.enums.CampaignQueryStatus;
 import com.ccrt.onlineshop.enums.CampaignStatus;
 import com.ccrt.onlineshop.enums.Message;
 import com.ccrt.onlineshop.enums.MessageCode;
@@ -56,13 +57,21 @@ public class CampaignServiceImpl implements CampaignService {
   }
 
   @Override
-  public List<CampaignDto> retrieveValidCampaigns(int page, int limit) {
-    Page<CampaignEntity> campaignEntities = campaignRepository.findValidCampaigns(utils.addHours(new Date(), 6),
-        PageRequest.of(page, limit, Sort.by("startTime").ascending()));
+  public List<CampaignDto> retrieveValidCampaigns(int page, int limit, CampaignQueryStatus campaignQueryStatus) {
+    Page<CampaignEntity> campaignEntities = null;
+    if (campaignQueryStatus == CampaignQueryStatus.RUNNING)
+      campaignEntities = campaignRepository.findRunningCampaigns(utils.addHours(new Date(), 6),
+          PageRequest.of(page, limit, Sort.by("startTime").ascending()));
+    else if (campaignQueryStatus == CampaignQueryStatus.RUNNING_AND_UPCOMING) {
+      campaignEntities = campaignRepository.findRunningAndFutureCampaigns(utils.addHours(new Date(), 6),
+          PageRequest.of(page, limit, Sort.by("startTime").ascending()));
+    }
 
     List<CampaignDto> campaignDtos = new ArrayList<>();
-    for (CampaignEntity campaignEntity : campaignEntities.getContent()) {
-      campaignDtos.add(modelMapper.map(campaignEntity, CampaignDto.class));
+    if (campaignEntities != null) {
+      for (CampaignEntity campaignEntity : campaignEntities.getContent()) {
+        campaignDtos.add(modelMapper.map(campaignEntity, CampaignDto.class));
+      }
     }
     return campaignDtos;
   }
@@ -116,6 +125,24 @@ public class CampaignServiceImpl implements CampaignService {
       return;
     }
     campaignProductRepository.delete(cpe);
+  }
+
+  @Override
+  public void deleteCampaign(String campaignId) {
+    CampaignEntity campaignEntity = campaignRepository.findByCampaignId(campaignId);
+    if (campaignEntity == null) {
+      throw new CampaignServiceException(MessageCode.CAMPAIGN_NOT_FOUND.name(), Message.CAMPAIGN_NOT_FOUND.getMessage(),
+          HttpStatus.NOT_FOUND);
+    }
+    Date currentTime = new Date();
+    Date startTime = campaignEntity.getStartTime();
+    if (startTime.getTime() > currentTime.getTime()) {
+      campaignRepository.delete(campaignEntity);
+    } else {
+      throw new CampaignServiceException(MessageCode.CAMPAIGN_CANNOT_BE_DELETED.name(),
+          "You can not delete a running campaign",
+          HttpStatus.FORBIDDEN);
+    }
   }
 
 }

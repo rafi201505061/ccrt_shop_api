@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ccrt.onlineshop.enums.CampaignQueryStatus;
+import com.ccrt.onlineshop.enums.CampaignStatus;
 import com.ccrt.onlineshop.enums.Message;
 import com.ccrt.onlineshop.enums.MessageCode;
 import com.ccrt.onlineshop.exceptions.CampaignServiceException;
@@ -53,8 +55,9 @@ public class CampaignController {
   @GetMapping
   public List<CampaignRest> retrieveCampaigns(
       @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-      @RequestParam(name = "limit", required = false, defaultValue = "15") int limit) {
-    List<CampaignDto> campaignDtos = campaignService.retrieveValidCampaigns(page, limit);
+      @RequestParam(name = "limit", required = false, defaultValue = "15") int limit,
+      @RequestParam(name = "status", required = false, defaultValue = "RUNNING") CampaignQueryStatus campaignQueryStatus) {
+    List<CampaignDto> campaignDtos = campaignService.retrieveValidCampaigns(page, limit, campaignQueryStatus);
     List<CampaignRest> campaignRests = new ArrayList<>();
     for (CampaignDto campaignDto : campaignDtos) {
       campaignRests.add(modelMapper.map(campaignDto, CampaignRest.class));
@@ -90,6 +93,13 @@ public class CampaignController {
       campaignProductRests.add(modelMapper.map(campaignProductDto, CampaignProductRest.class));
     }
     return campaignProductRests;
+  }
+
+  @DeleteMapping("/{campaignId}")
+  public ResponseEntity<String> deleteCampaign(
+      @PathVariable String campaignId) {
+    campaignService.deleteCampaign(campaignId);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   private void checkCampaignCreationRequestModel(CampaignCreationRequestModel campaignCreationRequestModel) {

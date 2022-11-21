@@ -47,6 +47,8 @@ public class SecurityConfigurer {
         .hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, "/campaigns")
         .hasAnyAuthority(Role.ADMIN.name())
+        .antMatchers(HttpMethod.DELETE, "/campaigns/{campaignId}")
+        .hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, "/covers").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.DELETE, "/covers/{coverId}").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, "/products").hasAnyAuthority(Role.ADMIN.name())
