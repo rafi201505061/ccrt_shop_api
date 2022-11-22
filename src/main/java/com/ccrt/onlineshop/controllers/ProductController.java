@@ -67,9 +67,11 @@ public class ProductController {
       @RequestParam(name = "sortType", defaultValue = "DESC", required = false) SortType sortType,
       @RequestParam(name = "startPrice", defaultValue = "0", required = false) double startPrice,
       @RequestParam(name = "endPrice", defaultValue = "999999999", required = false) double endPrice) {
+    List<ProductRest> productRests = new ArrayList<>();
+    if (endPrice < startPrice || (endPrice <= 0 && startPrice <= 0))
+      return productRests;
     List<ProductDto> productDtos = productService.retrieveProducts(page, limit, sortBy, sortType, subCategoryId,
         startPrice, endPrice);
-    List<ProductRest> productRests = new ArrayList<>();
     for (ProductDto productDto : productDtos) {
       productRests.add(modelMapper.map(productDto, ProductRest.class));
     }

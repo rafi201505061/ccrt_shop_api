@@ -37,9 +37,11 @@ public class MiscController {
       @RequestParam(name = "sub-category", defaultValue = "all", required = false) String subCategoryId,
       @RequestParam(name = "sortBy", defaultValue = "CREATION_TIME", required = false) SortValue sortBy,
       @RequestParam(name = "sortType", defaultValue = "DESC", required = false) SortType sortType) {
+    List<ProductRest> productRests = new ArrayList<>();
+    if (endPrice < startPrice || (endPrice <= 0 && startPrice <= 0))
+      return productRests;
     List<ProductDto> productDtos = productService.searchProducts(page, limit, keyword, startPrice, endPrice,
         subCategoryId, sortBy, sortType);
-    List<ProductRest> productRests = new ArrayList<>();
     for (ProductDto productDto : productDtos) {
       productRests.add(modelMapper.map(productDto, ProductRest.class));
     }
