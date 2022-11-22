@@ -24,6 +24,7 @@ import com.ccrt.onlineshop.enums.Role;
 import com.ccrt.onlineshop.exceptions.OrderServiceException;
 import com.ccrt.onlineshop.exceptions.UserServiceException;
 import com.ccrt.onlineshop.model.request.OrderCreationRequestModel;
+import com.ccrt.onlineshop.model.request.OrderItemCreationRequestModel;
 import com.ccrt.onlineshop.model.request.UserPasswordResetRequestModel;
 import com.ccrt.onlineshop.model.request.UserPasswordUpdateRequestModel;
 import com.ccrt.onlineshop.model.request.UserSignupRequestModel;
@@ -125,6 +126,20 @@ public class UserController {
       throw new OrderServiceException(MessageCode.FORBIDDEN.name(), Message.FORBIDDEN.getMessage(),
           HttpStatus.FORBIDDEN);
     }
+    List<OrderItemCreationRequestModel> orderItems = orderCreationRequestModel.getOrderItems();
+    List<OrderItemCreationRequestModel> validOrderItems = new ArrayList<>();
+    int totalItems = 0;
+    for (OrderItemCreationRequestModel orderItem : orderItems) {
+      totalItems += orderItem.getNumItems();
+      if (orderItem.getNumItems() > 0) {
+        validOrderItems.add(orderItem);
+      }
+    }
+    if (totalItems <= 0) {
+      throw new OrderServiceException("ORDER_QUANTITY_ERROR", "You must add at least one item.",
+          HttpStatus.BAD_REQUEST);
+    }
+    orderCreationRequestModel.setOrderItems(validOrderItems);
     OrderDto orderDto = modelMapper.map(orderCreationRequestModel, OrderDto.class);
     OrderDto createdOrderDto = orderService.createOrder(userId, orderDto);
     return modelMapper.map(createdOrderDto, OrderRest.class);
