@@ -49,27 +49,27 @@ public class CoverServiceImpl implements CoverService {
 
     try {
       CoverEntity coverEntity = modelMapper.map(coverDto, CoverEntity.class);
+
+      if (coverDto.getType() == CoverType.CATEGORY) {
+        SubCategoryEntity subCategoryEntity = subCategoryRepository.findBySubCategoryId(coverDto.getItemId());
+        if (subCategoryEntity == null) {
+          throw new CoverServiceException(MessageCode.SUB_CATEGORY_NOT_FOUND.name(),
+              Message.SUB_CATEGORY_NOT_FOUND.getMessage());
+        }
+        coverEntity.setImageUrl(subCategoryEntity.getImageUrl());
+      } else if (coverDto.getType() == CoverType.PRODUCT) {
+        ProductEntity productEntity = productRepository.findByProductId(coverDto.getItemId());
+        if (productEntity == null) {
+          throw new CoverServiceException(MessageCode.PRODUCT_NOT_FOUND.name(),
+              Message.PRODUCT_NOT_FOUND.getMessage());
+        }
+        coverEntity.setImageUrl(productEntity.getImageUrl());
+      }
       if (coverDto.getImage() != null) {
         String imageName = utils.generateImageId() + "."
             + utils.getFileExtension(coverDto.getImage().getOriginalFilename());
         fileUploadUtil.saveFile(FileUploadUtil.COVER_UPLOAD_DIR, imageName, coverDto.getImage());
         coverEntity.setImageUrl("/covers/" + imageName);
-      } else {
-        if (coverDto.getType() == CoverType.CATEGORY) {
-          SubCategoryEntity subCategoryEntity = subCategoryRepository.findBySubCategoryId(coverDto.getItemId());
-          if (subCategoryEntity == null) {
-            throw new CoverServiceException(MessageCode.SUB_CATEGORY_NOT_FOUND.name(),
-                Message.SUB_CATEGORY_NOT_FOUND.getMessage());
-          }
-          coverEntity.setImageUrl(subCategoryEntity.getImageUrl());
-        } else if (coverDto.getType() == CoverType.PRODUCT) {
-          ProductEntity productEntity = productRepository.findByProductId(coverDto.getItemId());
-          if (productEntity == null) {
-            throw new CoverServiceException(MessageCode.PRODUCT_NOT_FOUND.name(),
-                Message.PRODUCT_NOT_FOUND.getMessage());
-          }
-          coverEntity.setImageUrl(productEntity.getImageUrl());
-        }
       }
       CoverEntity createdCoverEntity = coverRepository.save(coverEntity);
       return modelMapper.map(createdCoverEntity, CoverDto.class);
