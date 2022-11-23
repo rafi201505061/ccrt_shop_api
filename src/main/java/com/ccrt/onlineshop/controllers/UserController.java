@@ -2,6 +2,7 @@ package com.ccrt.onlineshop.controllers;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ccrt.onlineshop.enums.Gender;
 import com.ccrt.onlineshop.enums.Message;
 import com.ccrt.onlineshop.enums.MessageCode;
 import com.ccrt.onlineshop.enums.Role;
@@ -205,9 +207,17 @@ public class UserController {
   private void checkUserUpdateRequestBody(UserUpdateRequestModel userUpdateRequestModel) {
     String firstName = userUpdateRequestModel.getFirstName();
     String lastName = userUpdateRequestModel.getLastName();
-    if (!utils.isNonNullAndNonEmpty(firstName) && !utils.isNonNullAndNonEmpty(lastName)) {
+    Date birthDate = userUpdateRequestModel.getBirthDate();
+    Gender gender = userUpdateRequestModel.getGender();
+    String profession = userUpdateRequestModel.getProfession();
+    String phoneNo = userUpdateRequestModel.getPhoneNo();
+    String email = userUpdateRequestModel.getEmail();
+
+    if (!utils.isNonNullAndNonEmpty(firstName) && !utils.isNonNullAndNonEmpty(lastName) && birthDate == null
+        && gender == null && !utils.isNonNullAndNonEmpty(profession) && !utils.isNonNullAndNonEmpty(phoneNo)
+        && !utils.validateEmail(email)) {
       throw new UserServiceException(MessageCode.BAD_REQUEST.name(),
-          "You must provide either first name or last name.", HttpStatus.BAD_REQUEST);
+          "You must provide some fields to update.", HttpStatus.BAD_REQUEST);
     }
 
   }

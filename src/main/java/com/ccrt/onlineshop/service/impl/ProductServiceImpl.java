@@ -231,21 +231,26 @@ public class ProductServiceImpl implements ProductService {
     }
     RatingEntity foundRatingEntity = ratingRepository.findByUser_UserIdAndProduct_ProductId(productDto.getRaterUserId(),
         productId);
-    if (foundRatingEntity != null) {
-      throw new ProductServiceException(MessageCode.RATING_ALREADY_EXISTS.name(),
-          Message.RATING_ALREADY_EXISTS.getMessage(),
-          HttpStatus.CONFLICT);
-    }
+    // if (foundRatingEntity != null) {
+    // throw new ProductServiceException(MessageCode.RATING_ALREADY_EXISTS.name(),
+    // Message.RATING_ALREADY_EXISTS.getMessage(),
+    // HttpStatus.CONFLICT);
+    // }
     double newAverageRating = (productEntity.getAverageRating() * productEntity.getTotalRater()
         + productDto.getRating()) / (productEntity.getTotalRater() + 1);
     productEntity.setAverageRating(newAverageRating);
     productEntity.setTotalRater(productEntity.getTotalRater() + 1);
     ProductEntity createdProductEntity = productRepository.save(productEntity);
-    RatingEntity ratingEntity = new RatingEntity();
-    ratingEntity.setProduct(productEntity);
-    ratingEntity.setUser(userEntity);
-    ratingEntity.setRating(productDto.getRating());
-    ratingRepository.save(ratingEntity);
+    if (foundRatingEntity == null) {
+      RatingEntity ratingEntity = new RatingEntity();
+      ratingEntity.setProduct(productEntity);
+      ratingEntity.setUser(userEntity);
+      ratingEntity.setRating(productDto.getRating());
+      ratingRepository.save(ratingEntity);
+    } else {
+      foundRatingEntity.setRating(productDto.getRating());
+      ratingRepository.save(foundRatingEntity);
+    }
     return modelMapper.map(createdProductEntity, ProductDto.class);
   }
 

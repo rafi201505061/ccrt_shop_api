@@ -1,5 +1,6 @@
 package com.ccrt.onlineshop.io.entity;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,7 +16,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
+import com.ccrt.onlineshop.enums.Gender;
 import com.ccrt.onlineshop.enums.Role;
 
 @Entity
@@ -48,6 +52,15 @@ public class UserEntity {
 
   @OneToMany(mappedBy = "uploader")
   private Set<ProductEntity> products = new HashSet<>();
+
+  @Enumerated(EnumType.STRING)
+  private Gender gender = null;
+
+  @Temporal(TemporalType.DATE)
+  private Date birthDate = null;
+
+  private String profession = null;
+  private String phoneNo = null;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(nullable = true)
@@ -143,6 +156,38 @@ public class UserEntity {
 
   public void setDefaultBillingAddress(AddressEntity defaultBillingAddress) {
     this.defaultBillingAddress = defaultBillingAddress;
+  }
+
+  public Gender getGender() {
+    return gender;
+  }
+
+  public void setGender(Gender gender) {
+    this.gender = gender;
+  }
+
+  public Date getBirthDate() {
+    return birthDate;
+  }
+
+  public void setBirthDate(Date birthDate) {
+    this.birthDate = birthDate;
+  }
+
+  public String getProfession() {
+    return profession;
+  }
+
+  public void setProfession(String profession) {
+    this.profession = profession;
+  }
+
+  public String getPhoneNo() {
+    return phoneNo;
+  }
+
+  public void setPhoneNo(String phoneNo) {
+    this.phoneNo = phoneNo;
   }
 
 }

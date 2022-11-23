@@ -70,8 +70,8 @@ public class ProductEntity {
   @JoinColumn(nullable = false)
   private SubCategoryEntity subCategory;
 
-  private double averageRating;
-  private long totalRater;
+  private double averageRating = 0;
+  private long totalRater = 0;
 
   @Column(nullable = false)
   private boolean isValid = true;

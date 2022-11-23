@@ -102,6 +102,21 @@ public class UserServiceImpl implements UserService {
       foundUserEntity.setFirstName(userDto.getFirstName());
     if (userDto.getLastName() != null)
       foundUserEntity.setLastName(userDto.getLastName());
+    if (userDto.getBirthDate() != null)
+      foundUserEntity.setBirthDate(userDto.getBirthDate());
+    if (userDto.getGender() != null)
+      foundUserEntity.setGender(userDto.getGender());
+    if (userDto.getProfession() != null)
+      foundUserEntity.setProfession(userDto.getProfession());
+    if (userDto.getPhoneNo() != null)
+      foundUserEntity.setPhoneNo(userDto.getPhoneNo());
+    if (userDto.getEmail() != null) {
+      if (userRepository.findByEmail(userDto.getEmail()) == null) {
+        throw new UserServiceException(MessageCode.DUPLICATE_EMAIL.name(), Message.USER_NOT_FOUND.getMessage(),
+            HttpStatus.CONFLICT);
+      }
+      foundUserEntity.setEmail(userDto.getEmail());
+    }
     UserEntity updatedUserEntity = userRepository.save(foundUserEntity);
     return modelMapper.map(updatedUserEntity, UserDto.class);
   }

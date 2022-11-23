@@ -1,5 +1,8 @@
 package com.ccrt.onlineshop.shared.dto;
 
+import java.util.Date;
+
+import com.ccrt.onlineshop.enums.Gender;
 import com.ccrt.onlineshop.enums.Role;
 
 public class UserDto {
@@ -13,6 +16,10 @@ public class UserDto {
   private String encryptedPassword;
   private Role role;
   private String passwordResetToken;
+  private Gender gender;
+  private Date birthDate;
+  private String profession;
+  private String phoneNo;
 
   public String getUserId() {
     return userId;
@@ -84,5 +91,37 @@ public class UserDto {
 
   public void setPasswordResetToken(String passwordResetToken) {
     this.passwordResetToken = passwordResetToken;
+  }
+
+  public Gender getGender() {
+    return gender;
+  }
+
+  public void setGender(Gender gender) {
+    this.gender = gender;
+  }
+
+  public Date getBirthDate() {
+    return birthDate;
+  }
+
+  public void setBirthDate(Date birthDate) {
+    this.birthDate = birthDate;
+  }
+
+  public String getProfession() {
+    return profession;
+  }
+
+  public void setProfession(String profession) {
+    this.profession = profession;
+  }
+
+  public String getPhoneNo() {
+    return phoneNo;
+  }
+
+  public void setPhoneNo(String phoneNo) {
+    this.phoneNo = phoneNo;
   }
 }

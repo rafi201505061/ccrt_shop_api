@@ -132,17 +132,20 @@ public class ProductController {
     return modelMapper.map(updatedProductDto, ProductRest.class);
   }
 
-  @PutMapping(value = "/{productId}/rating")
-  public ProductRest updateRating(@PathVariable String productId,
-      @RequestBody ProductRatingRequestModel productRatingRequestModel, Principal principal) {
-    if (!principal.getName().equals(productRatingRequestModel.getRaterUserId())) {
-      throw new ProductServiceException(MessageCode.FORBIDDEN.name(), Message.FORBIDDEN.getMessage(),
-          HttpStatus.FORBIDDEN);
-    }
-    ProductDto updatedProductDto = productService.updateRating(productId,
-        modelMapper.map(productRatingRequestModel, ProductDto.class));
-    return modelMapper.map(updatedProductDto, ProductRest.class);
-  }
+  // @PutMapping(value = "/{productId}/rating")
+  // public ProductRest updateRating(@PathVariable String productId,
+  // @RequestBody ProductRatingRequestModel productRatingRequestModel, Principal
+  // principal) {
+  // if (!principal.getName().equals(productRatingRequestModel.getRaterUserId()))
+  // {
+  // throw new ProductServiceException(MessageCode.FORBIDDEN.name(),
+  // Message.FORBIDDEN.getMessage(),
+  // HttpStatus.FORBIDDEN);
+  // }
+  // ProductDto updatedProductDto = productService.updateRating(productId,
+  // modelMapper.map(productRatingRequestModel, ProductDto.class));
+  // return modelMapper.map(updatedProductDto, ProductRest.class);
+  // }
 
   @GetMapping(value = "/{productId}/rating")
   public double retrieveRating(@PathVariable String productId,
