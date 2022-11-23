@@ -10,6 +10,7 @@ public class DonationRequestRest {
   private String productTitle;
   private int numItems;
   private DonationRequestStatus status;
+  private String imageUrl;
 
   public String getRequestId() {
     return requestId;
@@ -65,5 +66,13 @@ public class DonationRequestRest {
 
   public void setStatus(DonationRequestStatus status) {
     this.status = status;
+  }
+
+  public String getImageUrl() {
+    return imageUrl;
+  }
+
+  public void setImageUrl(String imageUrl) {
+    this.imageUrl = imageUrl;
   }
 }

@@ -53,6 +53,7 @@ public class SecurityConfigurer {
         .antMatchers(HttpMethod.DELETE, "/covers/{coverId}").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, "/products").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.PUT, "/products/{productId}").hasAnyAuthority(Role.ADMIN.name())
+        .antMatchers(HttpMethod.DELETE, "/products/{productId}").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.PUT, "/products/{productId}/image").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.PUT, "/products/{productId}/stock").hasAnyAuthority(Role.ADMIN.name())
         .antMatchers(HttpMethod.POST, SecurityConstants.LOG_IN_URL).permitAll()

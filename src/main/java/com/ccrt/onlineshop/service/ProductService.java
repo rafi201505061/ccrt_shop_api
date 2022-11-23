@@ -31,4 +31,6 @@ public interface ProductService {
 
 	double retrieveRating(String productId, String userId);
 
+	void deleteProduct(String productId);
+
 }

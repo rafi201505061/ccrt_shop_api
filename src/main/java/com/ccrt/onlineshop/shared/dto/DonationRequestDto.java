@@ -1,5 +1,7 @@
 package com.ccrt.onlineshop.shared.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.ccrt.onlineshop.enums.DonationRequestStatus;
 
 public class DonationRequestDto {
@@ -10,6 +12,8 @@ public class DonationRequestDto {
   private String productTitle;
   private int numItems;
   private DonationRequestStatus status;
+  private MultipartFile image;
+  private String imageUrl;
 
   public String getRequestId() {
     return requestId;
@@ -65,5 +69,21 @@ public class DonationRequestDto {
 
   public void setStatus(DonationRequestStatus status) {
     this.status = status;
+  }
+
+  public MultipartFile getImage() {
+    return image;
+  }
+
+  public void setImage(MultipartFile image) {
+    this.image = image;
+  }
+
+  public String getImageUrl() {
+    return imageUrl;
+  }
+
+  public void setImageUrl(String imageUrl) {
+    this.imageUrl = imageUrl;
   };
 }

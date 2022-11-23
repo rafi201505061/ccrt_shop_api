@@ -73,6 +73,9 @@ public class ProductEntity {
   private double averageRating;
   private long totalRater;
 
+  @Column(nullable = false)
+  private boolean isValid = true;
+
   @OneToMany(mappedBy = "product")
   private Set<OrderItemEntity> orderItems;
 
@@ -202,6 +205,14 @@ public class ProductEntity {
 
   public void setTotalRater(long totalRater) {
     this.totalRater = totalRater;
+  }
+
+  public boolean isValid() {
+    return isValid;
+  }
+
+  public void setValid(boolean isValid) {
+    this.isValid = isValid;
   }
 
 }

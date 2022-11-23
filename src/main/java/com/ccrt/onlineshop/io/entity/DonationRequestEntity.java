@@ -46,6 +46,9 @@ public class DonationRequestEntity {
   @Enumerated(EnumType.STRING)
   private DonationRequestStatus status = DonationRequestStatus.PENDING;
 
+  @Column(nullable = true, length = 250)
+  private String imageUrl;
+
   @Temporal(TemporalType.TIMESTAMP)
   @CreationTimestamp
   private Date creationTime;
@@ -120,6 +123,14 @@ public class DonationRequestEntity {
 
   public void setCreationTime(Date creationTime) {
     this.creationTime = creationTime;
+  }
+
+  public String getImageUrl() {
+    return imageUrl;
+  }
+
+  public void setImageUrl(String imageUrl) {
+    this.imageUrl = imageUrl;
   }
 
 }

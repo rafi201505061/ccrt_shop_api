@@ -16,6 +16,7 @@ public class FileUploadUtil {
   public static final String SUB_CATEGORY_UPLOAD_DIR = "C:\\rakibul\\Office\\ccrt-online-shop\\ccrt-online-shop\\public\\sub-categories";
   public static final String COVER_UPLOAD_DIR = "C:\\rakibul\\Office\\ccrt-online-shop\\ccrt-online-shop\\public\\covers";
   public static final String PRODUCT_UPLOAD_DIR = "C:\\rakibul\\Office\\ccrt-online-shop\\ccrt-online-shop\\public\\products";
+  public static final String REQUEST_DIR = "C:\\rakibul\\Office\\ccrt-online-shop\\ccrt-online-shop\\public\\donation-requests";
 
   // public static final String PROFILE_PICTURE_UPLOAD_DIR =
   // "C:\\rakibul\\Office\\CCRT Clinic\\ccrt-clinic\\public\\users";

@@ -6,14 +6,18 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ccrt.onlineshop.enums.DonationRequestStatus;
 import com.ccrt.onlineshop.enums.MessageCode;
@@ -36,12 +40,13 @@ public class DonationRequestController {
   @Autowired
   private Utils utils;
 
-  @PostMapping
-  public DonationRequestRest createDonationRequest(
-      @RequestBody DonationRequestCreationRequestModel donationRequestCreationRequestModel) {
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public DonationRequestRest createDonationRequest(@RequestPart(value = "image", required = false) MultipartFile image,
+      @ModelAttribute DonationRequestCreationRequestModel donationRequestCreationRequestModel) {
     checkDonationRequestCreationRequestModel(donationRequestCreationRequestModel);
     DonationRequestDto donationRequestDto = modelMapper.map(donationRequestCreationRequestModel,
         DonationRequestDto.class);
+    donationRequestDto.setImage(image);
     DonationRequestDto createdDonationRequestDto = donationRequestService.createDonationRequest(donationRequestDto);
     return modelMapper.map(createdDonationRequestDto, DonationRequestRest.class);
   }

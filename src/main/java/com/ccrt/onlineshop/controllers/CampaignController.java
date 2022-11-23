@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ccrt.onlineshop.enums.CampaignQueryStatus;
-import com.ccrt.onlineshop.enums.CampaignStatus;
 import com.ccrt.onlineshop.enums.Message;
 import com.ccrt.onlineshop.enums.MessageCode;
 import com.ccrt.onlineshop.exceptions.CampaignServiceException;

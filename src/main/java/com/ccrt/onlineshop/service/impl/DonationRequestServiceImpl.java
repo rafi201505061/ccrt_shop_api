@@ -1,5 +1,6 @@
 package com.ccrt.onlineshop.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import com.ccrt.onlineshop.exceptions.DonationServiceException;
 import com.ccrt.onlineshop.io.entity.DonationRequestEntity;
 import com.ccrt.onlineshop.io.repository.DonationRequestRepository;
 import com.ccrt.onlineshop.service.DonationRequestService;
+import com.ccrt.onlineshop.shared.FileUploadUtil;
 import com.ccrt.onlineshop.shared.Utils;
 import com.ccrt.onlineshop.shared.dto.DonationRequestDto;
 
@@ -34,14 +36,30 @@ public class DonationRequestServiceImpl implements DonationRequestService {
   @Autowired
   private Utils utils;
 
+  @Autowired
+  private FileUploadUtil fileUploadUtil;
+
   @Transactional
   @Override
   public DonationRequestDto createDonationRequest(DonationRequestDto donationRequestDto) {
-    DonationRequestEntity donationRequestEntity = modelMapper.map(donationRequestDto, DonationRequestEntity.class);
-    donationRequestEntity.setStatus(DonationRequestStatus.PENDING);
-    donationRequestEntity.setRequestId(utils.generateDonationRequestId());
-    DonationRequestEntity createdDonationRequestEntity = donationRequestRepository.save(donationRequestEntity);
-    return modelMapper.map(createdDonationRequestEntity, DonationRequestDto.class);
+    try {
+      DonationRequestEntity donationRequestEntity = modelMapper.map(donationRequestDto, DonationRequestEntity.class);
+      donationRequestEntity.setStatus(DonationRequestStatus.PENDING);
+      String requestId = utils.generateDonationRequestId();
+      donationRequestEntity.setRequestId(requestId);
+      if (donationRequestDto.getImage() != null) {
+        String fileName = requestId + "." + utils.getFileExtension(donationRequestDto.getImage().getOriginalFilename());
+        fileUploadUtil.saveFile(FileUploadUtil.REQUEST_DIR, fileName, donationRequestDto.getImage());
+        donationRequestEntity.setImageUrl("/donation-requests/" + fileName);
+      }
+      DonationRequestEntity createdDonationRequestEntity = donationRequestRepository.save(donationRequestEntity);
+      return modelMapper.map(createdDonationRequestEntity, DonationRequestDto.class);
+    } catch (IOException e) {
+      throw new DonationServiceException(MessageCode.FILE_CREATION_ERROR.name(),
+          Message.FILE_CREATION_ERROR.getMessage());
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override

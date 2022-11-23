@@ -8,6 +8,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -91,6 +93,12 @@ public class ProductController {
     ProductDto productDto = modelMapper.map(productUpdateRequestModel, ProductDto.class);
     ProductDto updatedProductDto = productService.updateProduct(productId, productDto);
     return modelMapper.map(updatedProductDto, ProductRest.class);
+  }
+
+  @DeleteMapping("/{productId}")
+  public ResponseEntity<String> deleteProduct(@PathVariable String productId) {
+    productService.deleteProduct(productId);
+    return new ResponseEntity<String>("Product has been deleted successfully.", HttpStatus.NO_CONTENT);
   }
 
   @PutMapping(value = "/{productId}/image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })

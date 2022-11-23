@@ -193,7 +193,7 @@ public class ProductServiceImpl implements ProductService {
       }
       String imageName = productId + "." + utils.getFileExtension(image.getOriginalFilename());
       fileUploadUtil.saveFile(FileUploadUtil.PRODUCT_UPLOAD_DIR, imageName, image);
-      productEntity.setImageUrl(FileUploadUtil.PRODUCT_UPLOAD_DIR + "\\" + imageName);
+      productEntity.setImageUrl("/products/" + imageName);
       ProductEntity createdProductEntity = productRepository.save(productEntity);
       return modelMapper.map(createdProductEntity, ProductDto.class);
     } catch (IOException e) {
@@ -281,6 +281,17 @@ public class ProductServiceImpl implements ProductService {
     if (foundRatingEntity == null)
       return 0;
     return foundRatingEntity.getRating();
+  }
+
+  @Override
+  public void deleteProduct(String productId) {
+    ProductEntity productEntity = productRepository.findByProductId(productId);
+    if (productEntity == null) {
+      throw new ProductServiceException(MessageCode.PRODUCT_NOT_FOUND.name(), Message.PRODUCT_NOT_FOUND.getMessage(),
+          HttpStatus.NOT_FOUND);
+    }
+    productEntity.setValid(false);
+    productRepository.save(productEntity);
   }
 
 }
