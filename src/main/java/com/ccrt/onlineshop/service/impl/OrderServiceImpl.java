@@ -69,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
 
   @Transactional
   @Override
-  public OrderDto createOrder(String userId, OrderDto orderDto) {
+  synchronized public OrderDto createOrder(String userId, OrderDto orderDto) {
     OrderEntity orderEntity = modelMapper.map(orderDto, OrderEntity.class);
     UserEntity userEntity = userRepository.findByUserId(userId);
     if (userEntity == null)
@@ -99,6 +99,7 @@ public class OrderServiceImpl implements OrderService {
     }
     List<OrderItemEntity> orderItemEntities = new ArrayList<>();
     double totalProductCost = 0;
+    List<ProductEntity> productEntities = new ArrayList<>();
 
     for (OrderItemDto orderItemDto : orderDto.getOrderItems()) {
       OrderItemEntity orderItemEntity = modelMapper.map(orderItemDto, OrderItemEntity.class);
@@ -113,7 +114,10 @@ public class OrderServiceImpl implements OrderService {
       orderItemEntity.setTotalCost(totalCost);
       totalProductCost += totalCost;
       orderItemEntities.add(orderItemEntity);
+      productEntity.setTotalEntities(productEntity.getTotalEntities() - orderItemDto.getNumItems());
+      productEntities.add(productEntity);
     }
+    productRepository.saveAll(productEntities);
     orderEntity.setTotalProductCost(totalProductCost);
     DeliveryCostEntity deliveryCostEntity = deliveryCostRepository.findByPlace(orderDto.getPlace());
     orderEntity.setDeliveryCost(deliveryCostEntity.getCost());
@@ -207,7 +211,7 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
-  public void cancelOrder(String userId, String orderId) {
+  synchronized public void cancelOrder(String userId, String orderId) {
     OrderEntity orderEntity = orderRepository.findByOrderId(orderId);
     if (orderEntity == null) {
       throw new OrderServiceException(MessageCode.ORDER_NOT_FOUND.name(), Message.ORDER_NOT_FOUND.getMessage(),
@@ -220,10 +224,19 @@ public class OrderServiceImpl implements OrderService {
     orderEntity.setOrderStatus(OrderStatus.CANCELLED);
     orderEntity.setCancellationTime(new Date());
     orderRepository.save(orderEntity);
+
     OrderStatusEntity orderStatusEntity = new OrderStatusEntity();
     orderStatusEntity.setOrder(orderEntity);
     orderStatusEntity.setOrderStatus(OrderStatus.CANCELLED);
     orderStatusRepository.save(orderStatusEntity);
+
+    List<ProductEntity> productEntities = new ArrayList<>();
+    for (OrderItemEntity orderItemEntity : orderEntity.getOrderItems()) {
+      ProductEntity productEntity = orderItemEntity.getProduct();
+      productEntity.setTotalEntities(productEntity.getTotalEntities() + orderItemEntity.getNumItems());
+      productEntities.add(productEntity);
+    }
+    productRepository.saveAll(productEntities);
 
   }
 
