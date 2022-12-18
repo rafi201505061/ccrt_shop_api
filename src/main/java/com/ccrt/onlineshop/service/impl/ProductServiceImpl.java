@@ -157,7 +157,7 @@ public class ProductServiceImpl implements ProductService {
 
   @Transactional
   @Override
-  public ProductDto updateProduct(String productId, ProductDto productDto) {
+  synchronized public ProductDto updateProduct(String productId, ProductDto productDto) {
     ProductEntity productEntity = productRepository.findByProductId(productId);
     if (productEntity == null) {
       throw new ProductServiceException(MessageCode.PRODUCT_NOT_FOUND.name(), Message.PRODUCT_NOT_FOUND.getMessage(),
@@ -205,7 +205,7 @@ public class ProductServiceImpl implements ProductService {
 
   @Transactional
   @Override
-  public ProductDto updateStock(String productId, long numEntities) {
+  synchronized public ProductDto updateStock(String productId, long numEntities) {
     ProductEntity productEntity = productRepository.findByProductId(productId);
     if (productEntity == null) {
       throw new ProductServiceException(MessageCode.PRODUCT_NOT_FOUND.name(), Message.PRODUCT_NOT_FOUND.getMessage(),
@@ -218,7 +218,7 @@ public class ProductServiceImpl implements ProductService {
 
   @Transactional
   @Override
-  public ProductDto addRating(String productId, ProductDto productDto) {
+  synchronized public ProductDto addRating(String productId, ProductDto productDto) {
     ProductEntity productEntity = productRepository.findByProductId(productId);
     if (productEntity == null) {
       throw new ProductServiceException(MessageCode.PRODUCT_NOT_FOUND.name(), Message.PRODUCT_NOT_FOUND.getMessage(),
@@ -289,7 +289,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public void deleteProduct(String productId) {
+  synchronized public void deleteProduct(String productId) {
     ProductEntity productEntity = productRepository.findByProductId(productId);
     if (productEntity == null) {
       throw new ProductServiceException(MessageCode.PRODUCT_NOT_FOUND.name(), Message.PRODUCT_NOT_FOUND.getMessage(),
